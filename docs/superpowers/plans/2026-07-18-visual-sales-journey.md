@@ -104,9 +104,9 @@ Add these attributes to the five existing `<details>` elements in source order:
 
 ```html
 <details data-failure-family="decision-story" open>
-<details data-failure-family="stakeholder-pathway">
-<details data-failure-family="stakeholder-pathway">
 <details data-failure-family="field-transfer">
+<details data-failure-family="stakeholder-pathway">
+<details data-failure-family="stakeholder-pathway">
 <details data-failure-family="field-transfer">
 ```
 

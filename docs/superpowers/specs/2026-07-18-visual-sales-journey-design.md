@@ -67,8 +67,8 @@ questions. Preserve the strongest existing lines rather than rewriting them.
 Visually organize the five domains into three engagement-aligned families:
 
 - Decision story: commercial story.
-- Stakeholder pathway: sales motion and leadership.
-- Field transfer: team build and launch readiness.
+- Stakeholder pathway: leadership and team build.
+- Field transfer: sales motion and launch readiness.
 
 One composite inspection plate shows the five faults inside the three families.
 The existing detail disclosures remain available for deeper reading.
