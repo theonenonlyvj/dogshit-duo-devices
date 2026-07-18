@@ -100,6 +100,8 @@ for (const viewport of viewports) {
           .map((element) => ({
             name: element.dataset.visualSignature,
             display: getComputedStyle(element).display,
+            visibility: getComputedStyle(element).visibility,
+            opacity: Number.parseFloat(getComputedStyle(element).opacity),
             height: element.getBoundingClientRect().height,
             width: element.getBoundingClientRect().width,
           })),
@@ -135,7 +137,8 @@ for (const viewport of viewports) {
     assert.ok(metrics.footerSize >= 14, 'footer text must remain readable');
     assert.equal(metrics.visualSignatures.length, 8);
     assert.ok(metrics.visualSignatures.every((visual) =>
-      visual.display !== 'none' && visual.height >= 35),
+      visual.display !== 'none' && visual.visibility !== 'hidden' &&
+      visual.opacity > 0 && visual.height >= 35 && visual.width >= 35),
     'every sales chapter keeps a visual signature');
     for (const target of metrics.targets) {
       assert.ok(target.height >= 43.5,
@@ -161,6 +164,15 @@ for (const viewport of viewports) {
       assert.ok(metrics.coverVisual.top < viewport.height);
       assert.ok(metrics.coverVisual.bottom <= metrics.primaryAction.top + 1,
         'the phone cover apparatus must lead directly into the primary action');
+      assert.ok(metrics.register.bottom <= viewport.height,
+        'the full operator register must fit in the first phone viewport');
+      assert.equal(metrics.mobileDominant.length, 4);
+      assert.deepEqual(metrics.mobileDominant.map((visual) => visual.name), [
+        'cover-apparatus',
+        'decision-environment',
+        'method-convergence',
+        'ledger-anatomy',
+      ]);
       assert.ok(metrics.mobileDominant.every((visual) => visual.height >= 83.5));
       assert.ok(metrics.zoneTops.every((top, index, values) =>
         index === 0 || top > values[index - 1]), 'phone nodes follow semantic order');

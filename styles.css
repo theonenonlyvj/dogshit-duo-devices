@@ -2027,11 +2027,33 @@ footer a {
 
 @media (max-width: 360px) {
   h1 {
+    margin-bottom: 0.25rem;
     font-size: clamp(2.75rem, 14.4vw, 3.2rem);
   }
 
   .document-rail {
+    min-height: 0;
+    padding-block: 0.15rem;
     font-size: 0.67rem;
+  }
+
+  .cover-sheet {
+    padding-block: 0.25rem;
+  }
+
+  .eyebrow,
+  .scope-line,
+  .cover-apparatus {
+    margin-block: 0.15rem;
+  }
+
+  .cover-apparatus img {
+    height: 2.75rem;
+    max-height: none;
+  }
+
+  .cover-context {
+    padding-top: 0;
   }
 
   .operator-register div {
