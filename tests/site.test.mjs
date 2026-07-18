@@ -57,18 +57,28 @@ test('contains the council-approved positioning and useful actions', () => {
   assert.match(html, /Clinical reality/);
   assert.match(html, /Engineering discipline/);
   assert.match(html, /Find where the pathway breaks/);
-  assert.match(html, /See ways to use the duo/);
   assert.match(html, /Commercial gut-check/);
 });
 
-test('orders recognition and hireable uses before pathway theory', () => {
-  const positions = ['name-reveal', 'failure-register', 'engagements',
-    'pathway', 'operators', 'manifesto', 'gut-check']
+test('orders the page as a buyer belief journey', () => {
+  const positions = ['failure-register', 'pathway', 'engagements', 'operators',
+    'name-reveal', 'manifesto', 'gut-check']
     .map((name) => html.indexOf(`id="${name}"`));
 
   assert.ok(positions.every((position) => position >= 0));
   assert.deepEqual(positions, [...positions].sort((a, b) => a - b));
+  assert.match(html, /The commercial pathway is broken\./);
+  assert.doesNotMatch(html, />See ways to use the duo</);
   assert.match(html, /<details open>/);
+});
+
+test('maps five failure signals to three engagement families', () => {
+  assert.equal((html.match(/data-failure-family="decision-story"/g) ?? []).length, 1);
+  assert.equal((html.match(/data-failure-family="stakeholder-pathway"/g) ?? []).length, 2);
+  assert.equal((html.match(/data-failure-family="field-transfer"/g) ?? []).length, 2);
+  for (const family of ['Decision story', 'Stakeholder pathway', 'Field transfer']) {
+    assert.match(html, new RegExp(`<strong>${family}<\\/strong>`));
+  }
 });
 
 test('uses decision signals and routes claims to internal owners', () => {

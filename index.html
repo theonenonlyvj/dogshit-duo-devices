@@ -22,8 +22,8 @@
   <nav class="field-index" aria-label="Field document sections">
     <a href="#top" data-section="top" aria-current="true"><span>00</span><span>Brief</span></a>
     <a href="#failure-register" data-section="failure-register"><span>01</span><span>Breaks</span></a>
-    <a href="#engagements" data-section="engagements"><span>02</span><span>Use</span></a>
-    <a href="#pathway" data-section="pathway"><span>03</span><span>Pathway</span></a>
+    <a href="#pathway" data-section="pathway"><span>02</span><span>Pathway</span></a>
+    <a href="#engagements" data-section="engagements"><span>03</span><span>Use</span></a>
     <a href="#operators" data-section="operators"><span>04</span><span>Method</span></a>
     <a href="#manifesto" data-section="manifesto"><span>05</span><span>Burn</span></a>
     <a href="#gut-check" data-section="gut-check"><span>06</span><span>Act</span></a>
@@ -42,7 +42,6 @@
         <p class="scope-line">For teams facing stalled deals, fragile launches, or a sales motion that depends on one heroic person.</p>
         <nav class="cover-actions" aria-label="Explore the field document">
           <a class="primary-action" href="#failure-register">Find where the pathway breaks</a>
-          <a class="secondary-action" href="#engagements">See ways to use the duo</a>
         </nav>
       </div>
 
@@ -63,21 +62,22 @@
   </header>
 
   <main id="main-content">
-    <section id="name-reveal" class="name-reveal reveal" aria-labelledby="reveal-title">
-      <p class="section-code">OPERATING PRINCIPLE / PLAIN LANGUAGE</p>
-      <h2 id="reveal-title">DDD stands for Dogshit Duo Devices. We tried a more polished name. It sounded like the problem.</h2>
-      <p>Plain language gets weak assumptions out of the meeting and into the work.</p>
-    </section>
-
     <section id="failure-register" class="failure-register reveal" data-section-id="failure-register" aria-labelledby="failure-title">
       <header class="section-heading">
         <p class="section-code">01 / FAILURE REGISTER</p>
         <h2 id="failure-title">Where the commercial motion actually breaks.</h2>
         <p>The formal question is what the meeting says. The operator translation is what the field hears.</p>
+        <p class="diagnostic-reframe">The commercial pathway is broken.</p>
       </header>
 
+      <ul class="fault-family-key" role="list">
+        <li><strong>Decision story</strong><span>Does the story create a decision?</span></li>
+        <li><strong>Stakeholder pathway</strong><span>Can decisions and handoffs survive without rescue?</span></li>
+        <li><strong>Field transfer</strong><span>Can the motion become repeatable use?</span></li>
+      </ul>
+
       <div class="failure-rows">
-        <details open>
+        <details data-failure-family="decision-story" open>
           <summary>
             <span>Commercial story</span>
             <span>Does the pitch create a decision?</span>
@@ -85,7 +85,7 @@
           </summary>
           <p><strong>Pressure-test:</strong> Which decision should this meeting create? What can disappear without weakening it?</p>
         </details>
-        <details>
+        <details data-failure-family="stakeholder-pathway">
           <summary>
             <span>Sales motion</span>
             <span>Can the process work without one heroic person?</span>
@@ -93,7 +93,7 @@
           </summary>
           <p><strong>Pressure-test:</strong> What breaks when the heroic person stays home?</p>
         </details>
-        <details>
+        <details data-failure-family="stakeholder-pathway">
           <summary>
             <span>Leadership</span>
             <span>Is ownership unambiguous?</span>
@@ -101,7 +101,7 @@
           </summary>
           <p><strong>Pressure-test:</strong> Who owns the next move, by when, and who only needs visibility?</p>
         </details>
-        <details>
+        <details data-failure-family="field-transfer">
           <summary>
             <span>Team build</span>
             <span>Are roles connected by an operating system?</span>
@@ -109,7 +109,7 @@
           </summary>
           <p><strong>Pressure-test:</strong> Which handoff currently depends on goodwill, memory, or rescue?</p>
         </details>
-        <details>
+        <details data-failure-family="field-transfer">
           <summary>
             <span>Launch readiness</span>
             <span>Does the work support the calendar?</span>
@@ -117,43 +117,6 @@
           </summary>
           <p><strong>Pressure-test:</strong> Which decision, evidence handoff, or field capability must be real before the date means anything?</p>
         </details>
-      </div>
-    </section>
-
-    <section id="engagements" class="engagements reveal" data-section-id="engagements" aria-labelledby="engagements-title">
-      <header class="section-heading">
-        <p class="section-code">02 / WAYS TO USE THE DUO</p>
-        <h2 id="engagements-title">Bring the problem that keeps surviving the meeting.</h2>
-      </header>
-
-      <div class="engagement-rows">
-        <article>
-          <header><p class="engagement-code">ENGAGEMENT / 01</p><h3>Pathway Autopsy</h3></header>
-          <dl>
-            <div><dt>Use when</dt><dd>Deals stall at different handoffs and every function offers a different diagnosis.</dd></div>
-            <div><dt>Working format</dt><dd>A cross-functional review of one live commercial pathway: stakeholders, decisions, evidence, ownership, and handoffs.</dd></div>
-            <div><dt>Who joins</dt><dd>The commercial owner, field lead, the person responsible for clinical adoption, and owners of the handoffs under review.</dd></div>
-            <div><dt>Hand-back</dt><dd>An annotated stakeholder pathway, named failure points, priority decisions, owners, and next moves.</dd></div>
-          </dl>
-        </article>
-        <article>
-          <header><p class="engagement-code">ENGAGEMENT / 02</p><h3>Pitch Decontamination</h3></header>
-          <dl>
-            <div><dt>Use when</dt><dd>The deck explains the product but still does not create a decision.</dd></div>
-            <div><dt>Working format</dt><dd>A red-team pass against actual buyer roles, responsible evidence, decision sequence, and internal claims-review boundaries.</dd></div>
-            <div><dt>Who joins</dt><dd>The pitch owner, commercial lead, the person representing clinical reality, and appropriate internal evidence or claims owners.</dd></div>
-            <div><dt>Hand-back</dt><dd>A decision narrative, evidence sequence, unresolved questions, and a claims-review handoff for the appropriate internal owners.</dd></div>
-          </dl>
-        </article>
-        <article>
-          <header><p class="engagement-code">ENGAGEMENT / 03</p><h3>Field Transfer</h3></header>
-          <dl>
-            <div><dt>Use when</dt><dd>The commercial motion depends on one founder, veteran, or heroic field operator.</dd></div>
-            <div><dt>Working format</dt><dd>A working review of repeatable moves, role boundaries, handoffs, and field-learning loops.</dd></div>
-            <div><dt>Who joins</dt><dd>The commercial leader, field representatives, operations or enablement owners, and relevant clinical-adoption partners.</dd></div>
-            <div><dt>Hand-back</dt><dd>A field operating map, ownership matrix, handoff checklist, and route for feeding wins and losses back into the system.</dd></div>
-          </dl>
-        </article>
       </div>
     </section>
 
@@ -230,6 +193,43 @@
       </div>
     </section>
 
+    <section id="engagements" class="engagements reveal" data-section-id="engagements" aria-labelledby="engagements-title">
+      <header class="section-heading">
+        <p class="section-code">02 / WAYS TO USE THE DUO</p>
+        <h2 id="engagements-title">Bring the problem that keeps surviving the meeting.</h2>
+      </header>
+
+      <div class="engagement-rows">
+        <article>
+          <header><p class="engagement-code">ENGAGEMENT / 01</p><h3>Pathway Autopsy</h3></header>
+          <dl>
+            <div><dt>Use when</dt><dd>Deals stall at different handoffs and every function offers a different diagnosis.</dd></div>
+            <div><dt>Working format</dt><dd>A cross-functional review of one live commercial pathway: stakeholders, decisions, evidence, ownership, and handoffs.</dd></div>
+            <div><dt>Who joins</dt><dd>The commercial owner, field lead, the person responsible for clinical adoption, and owners of the handoffs under review.</dd></div>
+            <div><dt>Hand-back</dt><dd>An annotated stakeholder pathway, named failure points, priority decisions, owners, and next moves.</dd></div>
+          </dl>
+        </article>
+        <article>
+          <header><p class="engagement-code">ENGAGEMENT / 02</p><h3>Pitch Decontamination</h3></header>
+          <dl>
+            <div><dt>Use when</dt><dd>The deck explains the product but still does not create a decision.</dd></div>
+            <div><dt>Working format</dt><dd>A red-team pass against actual buyer roles, responsible evidence, decision sequence, and internal claims-review boundaries.</dd></div>
+            <div><dt>Who joins</dt><dd>The pitch owner, commercial lead, the person representing clinical reality, and appropriate internal evidence or claims owners.</dd></div>
+            <div><dt>Hand-back</dt><dd>A decision narrative, evidence sequence, unresolved questions, and a claims-review handoff for the appropriate internal owners.</dd></div>
+          </dl>
+        </article>
+        <article>
+          <header><p class="engagement-code">ENGAGEMENT / 03</p><h3>Field Transfer</h3></header>
+          <dl>
+            <div><dt>Use when</dt><dd>The commercial motion depends on one founder, veteran, or heroic field operator.</dd></div>
+            <div><dt>Working format</dt><dd>A working review of repeatable moves, role boundaries, handoffs, and field-learning loops.</dd></div>
+            <div><dt>Who joins</dt><dd>The commercial leader, field representatives, operations or enablement owners, and relevant clinical-adoption partners.</dd></div>
+            <div><dt>Hand-back</dt><dd>A field operating map, ownership matrix, handoff checklist, and route for feeding wins and losses back into the system.</dd></div>
+          </dl>
+        </article>
+      </div>
+    </section>
+
     <section id="operators" class="operators reveal" data-section-id="operators" aria-labelledby="operators-title">
       <header class="section-heading">
         <p class="section-code">04 / OPERATING METHOD</p>
@@ -302,6 +302,12 @@
           </article>
         </div>
       </section>
+    </section>
+
+    <section id="name-reveal" class="name-reveal reveal" aria-labelledby="reveal-title">
+      <p class="section-code">OPERATING PRINCIPLE / PLAIN LANGUAGE</p>
+      <h2 id="reveal-title">DDD stands for Dogshit Duo Devices. We tried a more polished name. It sounded like the problem.</h2>
+      <p>Plain language gets weak assumptions out of the meeting and into the work.</p>
     </section>
 
     <section id="manifesto" class="manifesto reveal" data-section-id="manifesto" aria-labelledby="manifesto-title">
