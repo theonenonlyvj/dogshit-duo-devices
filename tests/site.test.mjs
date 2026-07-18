@@ -276,6 +276,29 @@ test('uses path geometry instead of live favicon text', async () => {
   assert.doesNotMatch(favicon, /<text\b|font-family=/);
 });
 
+test('ships small local text-free apparatus illustrations', async () => {
+  const assets = [
+    '../assets/visuals/cover-apparatus.svg',
+    '../assets/visuals/failure-plate.svg',
+    '../assets/visuals/method-convergence.svg',
+  ];
+  let totalBytes = 0;
+
+  for (const path of assets) {
+    const source = await readFile(new URL(path, import.meta.url), 'utf8');
+    const bytes = Buffer.byteLength(source);
+    totalBytes += bytes;
+    assert.ok(bytes < 12_288, `${path} exceeds the 12 KiB asset budget`);
+    assert.match(source, /viewBox="0 0 640 240"/);
+    const sourceWithoutStandardNamespace = source.replace(
+      'xmlns="http://www.w3.org/2000/svg"', '');
+    assert.doesNotMatch(
+      sourceWithoutStandardNamespace, /<text\b|<script\b|https?:|data:/i);
+  }
+
+  assert.ok(totalBytes < 61_440, 'authored SVG total exceeds 60 KiB');
+});
+
 test('resolves every local href and src target', async () => {
   const documentUrl = new URL('../index.html', import.meta.url);
   const targets = [...html.matchAll(/\b(?:href|src)=["']([^"']+)["']/g)]
