@@ -87,3 +87,19 @@ test('contains responsive rules without template effects', () => {
   assert.deepEqual([...new Set(literalColors.filter(
     (value) => !allowedValues.has(value)))], []);
 });
+
+test('maps ratios to pathway stages', async () => {
+  const { stageForRatio } = await import('../script.js');
+  assert.equal(stageForRatio(0), 'brief');
+  assert.equal(stageForRatio(0.3), 'buyers');
+  assert.equal(stageForRatio(0.6), 'evidence');
+  assert.equal(stageForRatio(0.9), 'execution');
+});
+
+test('keeps enhancement code small and progressive', async () => {
+  const script = await readFile(new URL('../script.js', import.meta.url), 'utf8');
+  assert.ok(Buffer.byteLength(script) < 10_240);
+  assert.match(script, /IntersectionObserver/);
+  assert.match(script, /navigator\.clipboard/);
+  assert.match(script, /document/);
+});
