@@ -312,6 +312,8 @@ test('documents local checks and the anonymous public-data boundary', async () =
 test('runs source and browser regression checks in GitHub Actions', async () => {
   const workflow = await readFile(new URL(
     '../.github/workflows/browser-regression.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /actions\/checkout@v6/);
+  assert.match(workflow, /actions\/setup-node@v6/);
   assert.match(workflow, /npm ci/);
   assert.match(workflow, /playwright install --with-deps chromium/);
   assert.match(workflow, /npm test/);
