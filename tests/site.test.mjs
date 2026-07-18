@@ -47,3 +47,23 @@ test('does not ship placeholders or personal contact channels', () => {
     assert.doesNotMatch(html, forbidden);
   }
 });
+
+const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+
+test('implements the approved palette and motion contract', () => {
+  for (const value of ['#f4f2ec', '#111a1e', '#93a4aa',
+    '#35666b', '#e05235', '#3b2a24']) {
+    assert.match(css.toLowerCase(), new RegExp(value));
+  }
+  assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+  assert.match(css, /:focus-visible/);
+  assert.match(css, /min-height:\s*44px/);
+});
+
+test('contains responsive rules without template effects', () => {
+  assert.match(css, /@media\s*\(max-width:\s*840px\)/);
+  for (const forbidden of [/backdrop-filter/i, /cursor:\s*none/i,
+    /scroll-snap-type/i]) {
+    assert.doesNotMatch(css, forbidden);
+  }
+});
