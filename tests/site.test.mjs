@@ -114,6 +114,28 @@ test('ships the continuous signature route and explicit handoff failures', () =>
   assert.match(html, /LEARNING STAYS LOCAL/);
 });
 
+test('ships the signature stakeholder decision environment', () => {
+  assert.match(html, /class="pathway-environment"/);
+  assert.equal((html.match(/data-pathway-zone=/g) ?? []).length, 3);
+  for (const zone of ['Adoption', 'Resource and approval', 'Operationalization']) {
+    assert.match(html, new RegExp(`<strong>${zone}<\\/strong>`));
+  }
+  assert.match(html, /ILLUSTRATIVE WORKING MODEL/);
+  assert.match(html, /class="feedback-loop"/);
+  assert.equal((html.match(/class="route-node"/g) ?? []).length, 6);
+  assert.equal((html.match(/HANDOFF FAILURE/g) ?? []).length, 2);
+});
+
+test('gives every sales chapter an intentional visual signature', () => {
+  const signatures = html.match(/data-visual-signature="[^"]+"/g) ?? [];
+  assert.equal(new Set(signatures).size, 8);
+  for (const name of ['cover-apparatus', 'failure-plate', 'decision-environment',
+    'engagement-selector', 'method-convergence', 'ledger-anatomy', 'ddd-plate',
+    'preflight-mark']) {
+    assert.match(html, new RegExp(`data-visual-signature="${name}"`));
+  }
+});
+
 test('makes every engagement forwardable without invented durations', () => {
   for (const label of ['Use when', 'Working format', 'Who joins', 'Hand-back']) {
     assert.equal((html.match(new RegExp(`<dt>${label}<\\/dt>`, 'g')) ?? []).length, 3);
@@ -132,12 +154,18 @@ test('shows a clearly illustrative hand-back rather than fake proof', () => {
   assert.match(html, /id="decision-ledger"/);
   assert.match(html, /ILLUSTRATIVE HAND-BACK \/ DECISION LEDGER/);
   assert.match(html, /Illustration, not client evidence\./);
-  assert.equal((html.match(/class="ledger-row"/g) ?? []).length, 3);
+  assert.equal((html.match(/class="ledger-row\b/g) ?? []).length, 3);
   assert.equal((html.match(/<dt>Internal next-move owner<\/dt>/g) ?? []).length, 3);
   assert.equal((html.match(/<dt>Owner state<\/dt>/g) ?? []).length, 3);
   assert.equal((html.match(/<dt>Timing state<\/dt>/g) ?? []).length, 3);
   assert.doesNotMatch(html, /<dt>Accountable owner<\/dt>/);
   assert.match(html, /A clinical champion is not a purchasing pathway\./);
+});
+
+test('makes accountability gaps explicit in the ledger', () => {
+  assert.equal((html.match(/class="ledger-row ledger-primary"/g) ?? []).length, 1);
+  assert.equal((html.match(/class="ledger-row ledger-secondary"/g) ?? []).length, 2);
+  assert.match(html, /UNSET STATES EXPOSE THE GAP/);
 });
 
 test('names actual participants and describes the failure register accurately', () => {
@@ -168,7 +196,9 @@ test('uses the approved Field Transfer engagement label', () => {
 });
 
 test('does not ship placeholders or personal contact channels', () => {
-  const visibleText = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  const contactScanHtml = html.replace(
+    /<div class="preflight-mark"[\s\S]*?<\/div>/, '');
+  const visibleText = contactScanHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
   for (const forbidden of [/@[a-z0-9.-]+\.[a-z]{2,}/i,
     /\+?\d[\d\s().-]{8,}\d/, /lorem ipsum/i, /example\.com/i]) {
     assert.doesNotMatch(visibleText, forbidden);
@@ -248,6 +278,17 @@ test('contains responsive rules without template effects', () => {
   const allowedValues = new Set(approvedColors.values());
   assert.deepEqual([...new Set(literalColors.filter(
     (value) => !allowedValues.has(value)))], []);
+});
+
+test('ships phone-first apparatus styles for every visual chapter', () => {
+  for (const selector of ['.cover-apparatus', '.fault-family-visual',
+    '.fault-family-key', '.pathway-environment', '.engagement-selector',
+    '.method-apparatus', '.ledger-primary', '.ddd-serial-plate',
+    '.preflight-mark']) {
+    assert.match(css, new RegExp(`\\${selector}\\b`));
+  }
+  assert.match(css, /@media\s*\(min-width:\s*841px\)/);
+  assert.match(css, /@media\s*\(max-width:\s*840px\)/);
 });
 
 test('maps ratios to pathway stages', async () => {

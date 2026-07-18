@@ -136,44 +136,51 @@
 
       <p class="pathway-aside">The CRM has one field for “decision-maker.” Reality brought a committee.</p>
 
-      <div class="pathway-field">
-        <svg class="pathway-line" aria-hidden="true" focusable="false" viewBox="0 0 1200 640" preserveAspectRatio="none">
-          <defs>
-            <marker id="route-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M 0 0 L 10 5 L 0 10 z"/>
-            </marker>
-          </defs>
-          <polyline points="28,34 428,34 828,34 1164,34 1164,300 28,300 28,354 428,354 828,354"/>
-          <path class="route-direction" d="M 330 34 H 390" marker-end="url(#route-arrow)"/>
-          <path class="route-direction" d="M 730 34 H 790" marker-end="url(#route-arrow)"/>
-          <path class="route-direction route-direction-risk" d="M 1164 210 V 275 H 1080" marker-end="url(#route-arrow)"/>
-          <path class="route-direction" d="M 330 354 H 390" marker-end="url(#route-arrow)"/>
-          <path class="route-direction" d="M 730 354 H 790" marker-end="url(#route-arrow)"/>
-        </svg>
+      <div class="pathway-environment" data-visual-signature="decision-environment" data-mobile-dominant>
+        <p class="working-model-label">ILLUSTRATIVE WORKING MODEL / ROLES AND ORDER VARY</p>
+        <div class="pathway-zone-labels" aria-hidden="true">
+          <span data-pathway-zone="adoption"><strong>Adoption</strong></span>
+          <span data-pathway-zone="approval"><strong>Resource and approval</strong></span>
+          <span data-pathway-zone="operationalization"><strong>Operationalization</strong></span>
+        </div>
+        <div class="pathway-field">
+          <svg class="pathway-line" aria-hidden="true" focusable="false" viewBox="0 0 1200 640" preserveAspectRatio="none">
+            <defs>
+              <marker id="route-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z"/>
+              </marker>
+            </defs>
+            <path class="zone-spine" d="M 200 22 V 596"/>
+            <path class="zone-spine" d="M 600 22 V 596"/>
+            <path class="zone-spine" d="M 1000 22 V 596"/>
+            <path class="cross-zone-gate" d="M 200 310 H 600" marker-end="url(#route-arrow)"/>
+            <path class="cross-zone-gate cross-zone-gate-risk" d="M 600 310 H 1000" marker-end="url(#route-arrow)"/>
+            <polyline class="feedback-route" points="1000,596 1128,596 1128,22 200,22" marker-end="url(#route-arrow)"/>
+          </svg>
 
-        <ol class="pathway-route" role="list">
-        <li>
+          <ol class="pathway-route" role="list">
+        <li data-node-zone="adoption">
           <span class="route-node" aria-hidden="true">01</span>
           <p class="route-label">01 / USER</p>
           <h3>User</h3>
           <p><strong>Must decide:</strong> Whether the change works in the real use environment.</p>
           <p><strong>Breaks when:</strong> Workflow burden and adoption friction stay invisible.</p>
         </li>
-        <li>
+        <li data-node-zone="adoption">
           <span class="route-node" aria-hidden="true">02</span>
           <p class="route-label">02 / CHAMPION</p>
           <h3>Clinical champion</h3>
           <p><strong>Must decide:</strong> Whether the value is defensible enough to carry forward.</p>
           <p><strong>Breaks when:</strong> The story outruns responsible evidence and stakeholder trust.</p>
         </li>
-        <li>
+        <li data-node-zone="approval">
           <span class="route-node" aria-hidden="true">03</span>
           <p class="route-label">03 / BUYER</p>
           <h3>Economic buyer</h3>
           <p><strong>Must decide:</strong> Whether the tradeoff deserves resources now.</p>
           <p><strong>Breaks when:</strong> The ask, owner, or economic consequence remains vague.</p>
         </li>
-        <li>
+        <li data-node-zone="approval">
           <span class="route-node" aria-hidden="true">04</span>
           <p class="route-alert"><span>HANDOFF FAILURE</span> APPROVAL ≠ USE</p>
           <p class="route-label">04 / APPROVAL</p>
@@ -181,14 +188,14 @@
           <p><strong>Must decide:</strong> Whether evidence, risk, and claims fit the decision.</p>
           <p><strong>Breaks when:</strong> Questions surface after the meeting that the pitch never prepared for.</p>
         </li>
-        <li>
+        <li data-node-zone="operationalization">
           <span class="route-node" aria-hidden="true">05</span>
           <p class="route-label">05 / IMPLEMENTATION</p>
           <h3>Contracting and implementation</h3>
           <p><strong>Must decide:</strong> Whether evidence fit, resource impact, terms, and ownership support use.</p>
           <p><strong>Breaks when:</strong> Approval arrives without workable handoffs or an implementation path.</p>
         </li>
-        <li>
+        <li data-node-zone="operationalization">
           <span class="route-node" aria-hidden="true">06</span>
           <p class="route-alert"><span>HANDOFF FAILURE</span> LEARNING STAYS LOCAL</p>
           <p class="route-label">06 / FIELD LEARNING</p>
@@ -197,6 +204,8 @@
           <p><strong>Breaks when:</strong> Learning stays with individuals instead of changing the system.</p>
         </li>
         </ol>
+        </div>
+        <p class="feedback-loop">Field learning returns to story, evidence, implementation, and repeatability.</p>
       </div>
     </section>
 
@@ -205,6 +214,12 @@
         <p class="section-code">02 / WAYS TO USE THE DUO</p>
         <h2 id="engagements-title">Bring the problem that keeps surviving the meeting.</h2>
       </header>
+
+      <ul class="engagement-selector" role="list" data-visual-signature="engagement-selector">
+        <li><span>Conflicting handoff diagnoses</span><strong>Pathway Autopsy</strong></li>
+        <li><span>Explanation without a decision</span><strong>Pitch Decontamination</strong></li>
+        <li><span>Motion depends on a hero</span><strong>Field Transfer</strong></li>
+      </ul>
 
       <div class="engagement-rows">
         <article>
@@ -258,7 +273,7 @@
 
       <div id="procedure" class="method-ledger">
         <p class="section-code">HAND-BACK / FIVE MOVES</p>
-        <figure class="method-convergence">
+        <figure class="method-apparatus" data-visual-signature="method-convergence" data-mobile-dominant>
           <img src="./assets/visuals/method-convergence.svg" alt="" width="640" height="240">
           <figcaption><span>CLINICAL REALITY</span><span>ENGINEERING DISCIPLINE</span><span>ACCOUNTABLE HAND-BACK</span></figcaption>
         </figure>
@@ -271,14 +286,14 @@
         </ol>
       </div>
 
-      <section id="decision-ledger" class="decision-ledger" aria-labelledby="ledger-title">
+      <section id="decision-ledger" class="decision-ledger" aria-labelledby="ledger-title" data-visual-signature="ledger-anatomy" data-mobile-dominant>
         <header>
           <p class="section-code">ILLUSTRATIVE HAND-BACK / DECISION LEDGER</p>
           <h3 id="ledger-title">What accountable next moves look like.</h3>
           <p>Illustration, not client evidence. A generic example of the hand-back structure.</p>
         </header>
         <div class="ledger-rows">
-          <article class="ledger-row">
+          <article class="ledger-row ledger-primary">
             <p class="ledger-code">01 / CLINICAL USER</p>
             <dl>
               <div><dt>Decision required</dt><dd>Does the change fit the real workflow?</dd></div>
@@ -289,7 +304,7 @@
               <div><dt>Smallest next move</dt><dd>Document the workflow change, adoption friction, and open user questions.</dd></div>
             </dl>
           </article>
-          <article class="ledger-row">
+          <article class="ledger-row ledger-secondary">
             <p class="ledger-code">02 / VALUE ANALYSIS</p>
             <dl>
               <div><dt>Decision required</dt><dd>Does the tradeoff merit resources and approval?</dd></div>
@@ -300,7 +315,7 @@
               <div><dt>Smallest next move</dt><dd>Route the decision questions to the appropriate internal evidence and resource owners.</dd></div>
             </dl>
           </article>
-          <article class="ledger-row">
+          <article class="ledger-row ledger-secondary">
             <p class="ledger-code">03 / FIELD TRANSFER</p>
             <dl>
               <div><dt>Decision required</dt><dd>Can approval become repeatable use?</dd></div>
@@ -312,11 +327,13 @@
             </dl>
           </article>
         </div>
+        <p class="ledger-gap-note">UNSET STATES EXPOSE THE GAP. THEY ARE NOT COMPLETED ACCOUNTABILITY.</p>
       </section>
     </section>
 
     <section id="name-reveal" class="name-reveal reveal" aria-labelledby="reveal-title">
       <p class="section-code">OPERATING PRINCIPLE / PLAIN LANGUAGE</p>
+      <p class="ddd-serial-plate" data-visual-signature="ddd-plate">DDD / COMMERCIAL PATHWAY PRACTICE / 002</p>
       <h2 id="reveal-title">DDD stands for Dogshit Duo Devices. We tried a more polished name. It sounded like the problem.</h2>
       <p>Plain language gets weak assumptions out of the meeting and into the work.</p>
     </section>
@@ -343,6 +360,9 @@
 
       <details open>
         <summary>Five questions for the pathway</summary>
+        <div class="preflight-mark" data-visual-signature="preflight-mark" aria-hidden="true">
+          <span>01</span><span>02</span><span>03</span><span>04</span><span>05</span>
+        </div>
         <ol class="gut-check-questions" role="list">
           <li>Who is trying to make which decision?</li>
           <li>What changes for each stakeholder?</li>
@@ -350,6 +370,7 @@
           <li>Where does momentum actually die?</li>
           <li>Who owns the next move, and by when?</li>
         </ol>
+        <p class="gut-check-interpretation">Conflicting answers across functions are a pathway problem. Match the live break to the engagement built for it.</p>
       </details>
 
       <button class="copy-gut-check" type="button" hidden>Copy the five-question gut-check</button>
