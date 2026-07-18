@@ -69,6 +69,7 @@ test('ships the complete semantic page contract', () => {
 
 test('contains the council-approved positioning and useful actions', () => {
   assert.match(html, /When a medtech sale stalls, inspect the pathway, not just the funnel\./);
+  assert.match(html, /<meta property="og:description" content="When a medtech sale stalls, inspect the pathway, not just the funnel\.">/);
   assert.match(html, /Dogshit Duo Devices/);
   assert.match(html, /Clinical reality/);
   assert.match(html, /Engineering discipline/);
@@ -176,8 +177,8 @@ test('names actual participants and describes the failure register accurately', 
 });
 
 test('uses one canonical pair of operator lenses everywhere', () => {
-  assert.ok((html.match(/Clinical reality/g) ?? []).length >= 3);
-  assert.ok((html.match(/Engineering discipline/g) ?? []).length >= 3);
+  assert.ok((html.match(/Clinical reality/g) ?? []).length >= 2);
+  assert.ok((html.match(/Engineering discipline/g) ?? []).length >= 2);
   assert.doesNotMatch(html, /Clinical perspective/);
   assert.doesNotMatch(html, /Engineering and commercial system/);
 });
@@ -411,7 +412,7 @@ test('keeps the social card to the exact approved copy and palette', async () =>
   const body = socialSource.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? '';
   const visibleText = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
-  assert.equal(visibleText, 'DOGSHIT DUO DEVICES Clinical reality. Engineering discipline. Commercial system. Serious operators. Unfortunate name.');
+  assert.equal(visibleText, 'DOGSHIT DUO DEVICES INSPECT THE PATHWAY. NOT JUST THE FUNNEL. Serious operators. Unfortunate name.');
   for (const color of approvedColors.values()) {
     assert.match(socialSource.toLowerCase(), new RegExp(color));
   }
