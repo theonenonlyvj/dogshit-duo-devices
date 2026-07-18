@@ -16,6 +16,22 @@ const implementationPlan = await readFile(new URL(
   import.meta.url), 'utf8');
 const personalName = String.fromCodePoint(86, 105, 106, 97, 121);
 
+function assertAuthoredSvgSource(source) {
+  assert.doesNotMatch(source, /<text\b|<script\b|data:/i);
+
+  const references = [...source.matchAll(
+    /\b(?:href|src)\s*=\s*(["'])([^"']*)\1/gi)]
+    .map((match) => match[2].trim());
+
+  for (const reference of references) {
+    assert.doesNotMatch(
+      reference,
+      /^(?:\/\/|[a-z][a-z\d+.-]*:)/i,
+      `Nonlocal SVG reference: ${reference}`,
+    );
+  }
+}
+
 test('keeps repository rules and plans anonymous', () => {
   for (const source of [agentRules, implementationPlan]) {
     assert.ok(!source.toLowerCase().includes(personalName.toLowerCase()));
@@ -276,6 +292,21 @@ test('uses path geometry instead of live favicon text', async () => {
   assert.doesNotMatch(favicon, /<text\b|font-family=/);
 });
 
+test('rejects nonlocal references in authored SVG source', () => {
+  const protocolRelative = '<svg xmlns="http://www.w3.org/2000/svg">'
+    + '<use href="//cdn.invalid/apparatus.svg#gate"/></svg>';
+  const customScheme = '<svg xmlns="http://www.w3.org/2000/svg">'
+    + '<image src="widget:apparatus"/></svg>';
+  const localRelative = '<svg xmlns="http://www.w3.org/2000/svg">'
+    + '<use href="./marks.svg#gate"/><image src="../images/plate.png"/></svg>';
+
+  assert.throws(
+    () => assertAuthoredSvgSource(protocolRelative), /nonlocal SVG reference/i);
+  assert.throws(
+    () => assertAuthoredSvgSource(customScheme), /nonlocal SVG reference/i);
+  assert.doesNotThrow(() => assertAuthoredSvgSource(localRelative));
+});
+
 test('ships small local text-free apparatus illustrations', async () => {
   const assets = [
     '../assets/visuals/cover-apparatus.svg',
@@ -290,10 +321,7 @@ test('ships small local text-free apparatus illustrations', async () => {
     totalBytes += bytes;
     assert.ok(bytes < 12_288, `${path} exceeds the 12 KiB asset budget`);
     assert.match(source, /viewBox="0 0 640 240"/);
-    const sourceWithoutStandardNamespace = source.replace(
-      'xmlns="http://www.w3.org/2000/svg"', '');
-    assert.doesNotMatch(
-      sourceWithoutStandardNamespace, /<text\b|<script\b|https?:|data:/i);
+    assertAuthoredSvgSource(source);
   }
 
   assert.ok(totalBytes < 61_440, 'authored SVG total exceeds 60 KiB');
