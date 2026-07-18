@@ -291,6 +291,22 @@ test('ships phone-first apparatus styles for every visual chapter', () => {
   assert.match(css, /@media\s*\(max-width:\s*840px\)/);
 });
 
+test('keeps the canonical phone ledger hierarchy primary-first', () => {
+  const phoneStyles = css.match(
+    /@media\s*\(max-width:\s*840px\)\s*\{([\s\S]*?)@media\s*\(max-width:\s*360px\)/,
+  )?.[1] ?? '';
+
+  assert.ok(phoneStyles);
+  assert.doesNotMatch(
+    phoneStyles,
+    /\.ledger-row dl\s*\{[^}]*grid-template-columns:/s,
+  );
+  assert.match(
+    phoneStyles,
+    /\.ledger-secondary dl\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/s,
+  );
+});
+
 test('maps ratios to pathway stages', async () => {
   const { stageForRatio } = await import('../script.js');
   assert.equal(stageForRatio(0), 'brief');
