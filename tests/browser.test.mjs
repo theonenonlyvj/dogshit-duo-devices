@@ -83,6 +83,7 @@ for (const viewport of viewports) {
         documentWidth: document.documentElement.scrollWidth,
         documentHeight: document.documentElement.scrollHeight,
         cover: rect('.document-cover'),
+        coverVisual: rect('[data-visual-signature="cover-apparatus"]'),
         primaryAction: rect('.primary-action'),
         register: rect('.operator-register'),
         pathway: rect('#pathway'),
@@ -95,6 +96,22 @@ for (const viewport of viewports) {
           .map((item) => item.getBoundingClientRect().top),
         routeLefts: [...document.querySelectorAll('.pathway-route > li')]
           .map((item) => item.getBoundingClientRect().left),
+        visualSignatures: [...document.querySelectorAll('[data-visual-signature]')]
+          .map((element) => ({
+            name: element.dataset.visualSignature,
+            display: getComputedStyle(element).display,
+            height: element.getBoundingClientRect().height,
+            width: element.getBoundingClientRect().width,
+          })),
+        mobileDominant: [...document.querySelectorAll('[data-mobile-dominant]')]
+          .map((element) => ({
+            name: element.dataset.visualSignature,
+            height: element.getBoundingClientRect().height,
+          })),
+        zoneLefts: [...document.querySelectorAll('[data-node-zone]')]
+          .map((element) => element.getBoundingClientRect().left),
+        zoneTops: [...document.querySelectorAll('[data-node-zone]')]
+          .map((element) => element.getBoundingClientRect().top),
         h1Size: Number.parseFloat(getComputedStyle(document.querySelector('h1')).fontSize),
         h2Size: Number.parseFloat(getComputedStyle(document.querySelector('h2')).fontSize),
         footerSize: Number.parseFloat(getComputedStyle(document.querySelector('footer')).fontSize),
@@ -116,6 +133,10 @@ for (const viewport of viewports) {
     assert.ok(metrics.displayFontReady && metrics.textFontReady,
       'self-hosted fonts should be loaded');
     assert.ok(metrics.footerSize >= 14, 'footer text must remain readable');
+    assert.equal(metrics.visualSignatures.length, 8);
+    assert.ok(metrics.visualSignatures.every((visual) =>
+      visual.display !== 'none' && visual.height >= 35),
+    'every sales chapter keeps a visual signature');
     for (const target of metrics.targets) {
       assert.ok(target.height >= 43.5,
         `${target.label} is shorter than the 44px target`);
@@ -130,12 +151,19 @@ for (const viewport of viewports) {
       assert.notEqual(metrics.routeLineDisplay, 'none');
       assert.equal(metrics.activeIndexLabelOpacity, '0',
         'the active index label must not cover page copy');
-      assert.ok(metrics.routeLefts[0] < metrics.routeLefts[1] &&
-        metrics.routeLefts[1] < metrics.routeLefts[2]);
-      assert.ok(metrics.routeLefts[3] < metrics.routeLefts[4] &&
-        metrics.routeLefts[4] < metrics.routeLefts[5]);
+      assert.ok(Math.abs(metrics.zoneLefts[0] - metrics.zoneLefts[1]) < 2);
+      assert.ok(Math.abs(metrics.zoneLefts[2] - metrics.zoneLefts[3]) < 2);
+      assert.ok(Math.abs(metrics.zoneLefts[4] - metrics.zoneLefts[5]) < 2);
+      assert.ok(metrics.zoneLefts[0] < metrics.zoneLefts[2] &&
+        metrics.zoneLefts[2] < metrics.zoneLefts[4]);
     } else {
       assert.equal(metrics.routeLineDisplay, 'none');
+      assert.ok(metrics.coverVisual.top < viewport.height);
+      assert.ok(metrics.coverVisual.bottom <= metrics.primaryAction.top + 1,
+        'the phone cover apparatus must lead directly into the primary action');
+      assert.ok(metrics.mobileDominant.every((visual) => visual.height >= 83.5));
+      assert.ok(metrics.zoneTops.every((top, index, values) =>
+        index === 0 || top > values[index - 1]), 'phone nodes follow semantic order');
       assert.ok(metrics.routeTops.every((top, index, values) =>
         index === 0 || top > values[index - 1]), 'mobile route follows 01–06');
       const maxPathwayHeight = viewport.width <= 360 ? 1950 : 1680;
