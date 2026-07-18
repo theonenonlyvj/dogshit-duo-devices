@@ -11,6 +11,10 @@ artifacts. Preserve the published site's identity and most of its copy. Reduce
 text-block fatigue by making each major visual answer a buyer question that the
 copy currently carries alone.
 
+The branch is designed phone first. The 390-pixel composition is the canonical
+sales experience, not a reduced desktop layout. Desktop expands that system
+without changing its reading order or commercial argument.
+
 The experiment lives on `experiment/visual-sales-journey`. The published `main`
 branch remains unchanged until the owner explicitly chooses to replace it.
 
@@ -35,6 +39,10 @@ report, an industrial cartoon, or a generic SaaS dashboard.
 ## Sales Story
 
 The page follows seven buyer belief shifts.
+
+Its central reframe is declarative: `The commercial pathway is broken.` The
+page earns that statement by showing the recurring symptoms, interdependent
+decisions, and handoff failures immediately after the cover.
 
 ### 1. Recognition
 
@@ -186,11 +194,13 @@ meaning, the SVG is hidden from assistive technology.
 
 ## Responsive Pacing
 
-Desktop may show all seven to eight visual moments, with one dominant graphic
-per major chapter and quiet space between them. Visuals occupy existing column
-space or replace equivalent prose density rather than extending the page.
+Design the 390-pixel version first. Its opening viewport contains the headline,
+a meaningful fragment of the diagnostic apparatus, and the primary action.
+The apparatus is not a decorative background and the action remains reachable
+without an initial scroll marathon.
 
-At 320 to 430 pixels, only four graphics remain dominant:
+At 320 to 430 pixels, every chapter retains a visual signature. Four graphics
+remain dominant:
 
 1. Cover diagnostic apparatus.
 2. Stakeholder decision environment.
@@ -198,8 +208,13 @@ At 320 to 430 pixels, only four graphics remain dominant:
 4. Annotated ledger specimen.
 
 The failure plate, engagement selector, serial plate, and preflight mark become
-compact row marks or simplified diagrams. They do not shrink a desktop graphic
-until its labels become unreadable.
+compact row marks or simplified diagrams. They remain meaningful and visible.
+They do not shrink a desktop graphic until its labels become unreadable.
+
+Desktop shows all seven to eight visual moments with more generous diagrams,
+one dominant graphic per major chapter, and quiet space between them. Visuals
+occupy existing column space or replace equivalent prose density rather than
+extending the page.
 
 Keep the current document-height ceilings:
 
@@ -251,7 +266,7 @@ P1, and P2 findings are implemented before the branch preview is handed back.
 A reader scanning only headings and graphics can answer, in order:
 
 1. Is this my commercial problem?
-2. Which failure pattern might we have?
+2. Which failure pattern do we have?
 3. Who must decide what?
 4. Where can momentum fail?
 5. Which engagement fits?
