@@ -25,19 +25,19 @@
 
 ## File Map
 
-- `AGENTS.md` — project-local public/privacy, publishing, and verification rules.
-- `README.md` — public project description, preview, testing, and publishing notes.
-- `package.json` — dependency-free test and preview scripts.
-- `index.html` — complete semantic site narrative and metadata.
-- `styles.css` — tokens, layouts, components, responsive rules, focus, and reduced motion.
-- `script.js` — progressive scroll-state and clipboard enhancements.
-- `scripts/serve.mjs` — minimal local static server using Node core modules.
-- `tests/site.test.mjs` — source-contract, accessibility, privacy, asset, and enhancement tests.
-- `assets/favicon.svg` — compact typographic DDD browser icon.
-- `assets/og.html` — HTML/CSS source for the social card.
-- `assets/og.png` — rendered 1200×630 social card.
-- `404.html` — repository-path-safe recovery page.
-- `.nojekyll` — disables unintended Jekyll processing.
+- `AGENTS.md`: project-local public/privacy, publishing, and verification rules.
+- `README.md`: public project description, preview, testing, and publishing notes.
+- `package.json`: dependency-free test and preview scripts.
+- `index.html`: complete semantic site narrative and metadata.
+- `styles.css`: tokens, layouts, components, responsive rules, focus, and reduced motion.
+- `script.js`: progressive scroll-state and clipboard enhancements.
+- `scripts/serve.mjs`: minimal local static server using Node core modules.
+- `tests/site.test.mjs`: source-contract, accessibility, privacy, asset, and enhancement tests.
+- `assets/favicon.svg`: compact typographic DDD browser icon.
+- `assets/og.html`: HTML/CSS source for the social card.
+- `assets/og.png`: rendered 1200×630 social card.
+- `404.html`: repository-path-safe recovery page.
+- `.nojekyll`: disables unintended Jekyll processing.
 
 ### Task 1: Public-safe semantic foundation
 
@@ -285,7 +285,7 @@ When `doc` exists, use `IntersectionObserver` to set
 to add `.is-visible` to `.reveal` without hiding its text. On `.copy-gut-check`
 activation, write the five questions to `navigator.clipboard` and report success
 in `.copy-status`. On failure report:
-`Copy unavailable — select the checklist below.`
+`Copy unavailable. Select the checklist below.`
 
 - [ ] **Step 4: Implement `scripts/serve.mjs`**
 

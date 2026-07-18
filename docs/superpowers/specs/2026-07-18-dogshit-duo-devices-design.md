@@ -1,4 +1,4 @@
-# Dogshit Duo Devices — Site Design
+# Dogshit Duo Devices: Site Design
 
 ## Objective
 
@@ -23,7 +23,7 @@ fails in real buying environments. The composition bends under reality but
 never becomes chaotic or unserious.
 
 Humor comes from recognition and contrast. The site targets stale playbooks,
-ambiguous ownership, and performative alignment—not clinicians, customers,
+ambiguous ownership, and performative alignment, not clinicians, customers,
 salespeople, regulated work, or specific organizations.
 
 ## Brand System
@@ -146,11 +146,11 @@ initials, social profiles, employer history, or invented experience totals.
 
 The method is shown as a five-row `INPUT / ACTION / OUTPUT` procedure:
 
-1. Intake — isolate assumptions and define the real decision.
-2. Dual pass — compare clinical and engineering/commercial failure signals.
-3. Red team — pressure-test story, sequence, ownership, and handoffs.
-4. Rebuild — identify the smallest executable corrections.
-5. Hand back — establish accountable owners and explicit next moves.
+1. Intake: isolate assumptions and define the real decision.
+2. Dual pass: compare clinical and engineering/commercial failure signals.
+3. Red team: pressure-test story, sequence, ownership, and handoffs.
+4. Rebuild: identify the smallest executable corrections.
+5. Hand back: establish accountable owners and explicit next moves.
 
 ### 7. Ways to use the duo
 

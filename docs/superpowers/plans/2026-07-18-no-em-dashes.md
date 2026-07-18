@@ -103,7 +103,7 @@ Use these exact final forms in `index.html`:
 <p class="lede">We pressure-test the story, stakeholders, evidence, ownership, and handoffs. Then we turn the failure points into accountable next moves.</p>
 <p><strong>Pressure-test:</strong> Which decision should this meeting create? What can disappear without weakening it?</p>
 <div><dt>Working format</dt><dd>A cross-functional review of one live commercial pathway: stakeholders, decisions, evidence, ownership, and handoffs.</dd></div>
-<p>Constraints, decision mechanics, ownership, handoffs, and field feedback, organized into a commercial system that can repeat without a hero.</p>
+<p>We organize constraints, decision mechanics, ownership, handoffs, and field feedback into a commercial system that can repeat without a hero.</p>
 <p>Illustration, not client evidence. A generic example of the hand-back structure.</p>
 ```
 

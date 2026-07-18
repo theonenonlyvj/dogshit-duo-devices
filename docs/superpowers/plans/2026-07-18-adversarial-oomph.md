@@ -67,7 +67,7 @@
 - Modify: `styles.css`
 - Modify: `tests/site.test.mjs`
 
-1. Change the cover claim to “When a medtech sale stalls, inspect the pathway—not just the funnel.”
+1. Change the cover claim to “When a medtech sale stalls, inspect the pathway, not just the funnel.”
 2. Canonicalize the two operator lenses as Clinical reality and Engineering discipline, with the commercial system as their shared output.
 3. Expand all three engagements with Use when, Working format, Who joins, and Hand-back.
 4. Put all five scar-tissue translations in the visible summary and add a pressure-test prompt inside each disclosure.

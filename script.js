@@ -115,7 +115,7 @@ if (doc) {
         copyFallback.focus();
         copyFallback.select();
         copyStatus.textContent =
-          'Copy is blocked here. The questions are selected—press Command/Ctrl+C.';
+          'Copy is blocked here. The questions are selected; press Command/Ctrl+C.';
       }
     });
     copyButton.hidden = false;

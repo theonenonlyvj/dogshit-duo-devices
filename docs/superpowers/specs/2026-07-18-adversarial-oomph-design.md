@@ -4,14 +4,14 @@
 
 ## Objective
 
-Turn the existing public field document into an unmistakable, ownable Dogshit Duo Devices experience without losing its credible consulting-company guise. The page should be funny because an unusually serious medtech operating system carries an unfortunate name—not because the interface becomes novelty merchandise.
+Turn the existing public field document into an unmistakable, ownable Dogshit Duo Devices experience without losing its credible consulting-company guise. The page should be funny because an unusually serious medtech operating system carries an unfortunate name, not because the interface becomes novelty merchandise.
 
 ## Non-negotiables
 
 - Keep the site anonymous, public-safe, static, and deployable from a GitHub Pages project path.
 - Keep the paper, carbon, teal, orange, and umber field-document palette; square geometry; sparse motion; and one uncensored name reveal.
 - Add no forms, analytics, tracking, cookies, external runtime dependencies, personal details, client material, testimonials, or fabricated outcomes.
-- Treat all claims as perspective, method, or clearly labeled illustration—not proof of results.
+- Treat all claims as perspective, method, or clearly labeled illustration, not proof of results.
 - Preserve semantic HTML, keyboard operation, reduced-motion behavior, 44px controls, and readable small text.
 
 ## Design decisions

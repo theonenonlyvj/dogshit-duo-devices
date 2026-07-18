@@ -30,7 +30,7 @@ The release will therefore:
 - Eyebrow: `MEDICAL DEVICE COMMERCIALIZATION / TWO OPERATOR LENSES`
 - H1: `When a medtech sale stalls, the problem is rarely the funnel. It's the pathway.`
 - Scope: `For teams facing stalled deals, fragile launches, or a sales motion that depends on one heroic person.`
-- Lede: `We pressure-test the story, stakeholders, evidence, ownership, and handoffs—then turn the failure points into accountable next moves.`
+- Lede: `We pressure-test the story, stakeholders, evidence, ownership, and handoffs. Then we turn the failure points into accountable next moves.`
 - Clinical reality: `Who must change behavior, what earns trust, and where adoption breaks.`
 - Commercial system: `Who decides, who owns the handoffs, and whether the motion repeats without a hero.`
 - Primary action: `Find where the pathway breaks` → `#failure-register`
@@ -89,7 +89,7 @@ The gut-check stays useful and serious. The final callback is `Bad name. Better 
 
 The button reads `Copy or select the five questions`. If Clipboard API access fails, JavaScript reveals a plain-text fallback, selects it, focuses it, and reports:
 
-`Copy is blocked here. The questions are selected—press Command/Ctrl+C.`
+`Copy is blocked here. The questions are selected; press Command/Ctrl+C.`
 
 The questions remain fully usable without JavaScript; no dependency, download service, or backend is introduced.
 

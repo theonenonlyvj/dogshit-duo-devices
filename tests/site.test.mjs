@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { access, readFile } from 'node:fs/promises';
+import { extname, join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 
+const projectRoot = fileURLToPath(new URL('..', import.meta.url));
+const trackedTextExtensions = new Set([
+  '.css', '.html', '.js', '.json', '.md', '.mjs', '.svg', '.txt', '.yaml', '.yml',
+]);
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const agentRules = await readFile(new URL('../AGENTS.md', import.meta.url), 'utf8');
 const implementationPlan = await readFile(new URL(
@@ -13,6 +20,23 @@ test('keeps repository rules and plans anonymous', () => {
   for (const source of [agentRules, implementationPlan]) {
     assert.ok(!source.toLowerCase().includes(personalName.toLowerCase()));
   }
+});
+
+test('contains no em dash characters in tracked text files', async () => {
+  const trackedFiles = execFileSync('git', ['ls-files', '-z'], {
+    cwd: projectRoot,
+    encoding: 'utf8',
+  }).split('\0').filter(Boolean).filter((file) =>
+    trackedTextExtensions.has(extname(file)) || ['.gitignore', '.nojekyll'].includes(file));
+  const forbiddenCharacter = String.fromCodePoint(0x2014);
+  const offenders = [];
+
+  for (const file of trackedFiles) {
+    const source = await readFile(join(projectRoot, file), 'utf8');
+    if (source.includes(forbiddenCharacter)) offenders.push(file);
+  }
+
+  assert.deepEqual(offenders, []);
 });
 
 test('ships the complete semantic page contract', () => {
@@ -28,7 +52,7 @@ test('ships the complete semantic page contract', () => {
 });
 
 test('contains the council-approved positioning and useful actions', () => {
-  assert.match(html, /When a medtech sale stalls, inspect the pathway—not just the funnel\./);
+  assert.match(html, /When a medtech sale stalls, inspect the pathway, not just the funnel\./);
   assert.match(html, /Dogshit Duo Devices/);
   assert.match(html, /Clinical reality/);
   assert.match(html, /Engineering discipline/);
@@ -81,7 +105,7 @@ test('puts scar tissue on the scan and pressure tests in disclosures', () => {
 test('shows a clearly illustrative hand-back rather than fake proof', () => {
   assert.match(html, /id="decision-ledger"/);
   assert.match(html, /ILLUSTRATIVE HAND-BACK \/ DECISION LEDGER/);
-  assert.match(html, /Illustration—not client evidence\./);
+  assert.match(html, /Illustration, not client evidence\./);
   assert.equal((html.match(/class="ledger-row"/g) ?? []).length, 3);
   assert.equal((html.match(/<dt>Internal next-move owner<\/dt>/g) ?? []).length, 3);
   assert.equal((html.match(/<dt>Owner state<\/dt>/g) ?? []).length, 3);
