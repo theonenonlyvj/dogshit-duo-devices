@@ -88,6 +88,17 @@ for (const viewport of viewports) {
         cover: rect('.document-cover'),
         coverVisual: rect('[data-visual-signature="cover-apparatus"]'),
         coverImage: rect('.cover-apparatus img'),
+        coverLabels: [...document.querySelectorAll('.cover-apparatus figcaption span')]
+          .map((element) => ({
+            text: element.textContent.trim(),
+            ...rect(`.cover-apparatus figcaption span:nth-child(${
+              [...element.parentElement.children].indexOf(element) + 1})`),
+            display: getComputedStyle(element).display,
+            visibility: getComputedStyle(element).visibility,
+            opacity: Number.parseFloat(getComputedStyle(element).opacity),
+            textFits: element.scrollWidth <= element.clientWidth + 1 &&
+              element.scrollHeight <= element.clientHeight + 1,
+          })),
         primaryAction: rect('.primary-action'),
         register: rect('.operator-register'),
         gutCheckAction: rect('.gut-check-action'),
@@ -152,6 +163,13 @@ for (const viewport of viewports) {
     assert.ok(metrics.displayFontReady && metrics.textFontReady,
       'self-hosted fonts should be loaded');
     assert.ok(metrics.footerSize >= 14, 'footer text must remain readable');
+    assert.deepEqual(metrics.coverLabels.map((label) => label.text), [
+      'STALL SIGNAL', 'PATHWAY INSPECTION', 'NAMED BREAK', 'OWNER + SMALLEST MOVE',
+    ]);
+    assert.ok(metrics.coverLabels.every((label) =>
+      label.display !== 'none' && label.visibility !== 'hidden' &&
+      label.opacity > 0 && label.textFits),
+    'all four cover stages must remain live and readable');
     assert.deepEqual(metrics.zoneNodeCounts, [2, 2, 2]);
     assert.equal(metrics.engagementPrimaryWeights.length, 6);
     assert.equal(metrics.engagementDetailWeights.length, 6);
@@ -193,6 +211,10 @@ for (const viewport of viewports) {
         'the phone apparatus image itself must visibly occupy at least 84px');
       assert.ok(metrics.coverImage.width >= metrics.coverVisual.width * 0.8,
         'the phone apparatus image must occupy most of the content width');
+      assert.ok(metrics.coverLabels.every((label) =>
+        label.top >= metrics.coverVisual.top &&
+        label.bottom <= metrics.coverVisual.bottom + 1),
+      'the four cover labels must stay integrated inside the compact apparatus');
       assert.ok(metrics.coverVisual.bottom <= metrics.primaryAction.top + 1,
         'the phone cover apparatus must lead directly into the primary action');
       assert.ok(metrics.register.bottom <= viewport.height,

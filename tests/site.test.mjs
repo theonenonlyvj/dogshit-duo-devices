@@ -156,7 +156,7 @@ test('ships three semantic pathway zones and explicit handoff failures', () => {
   assert.equal((html.match(/HANDOFF FAILURE/g) ?? []).length, 2);
   assert.equal((html.match(/class="route-node"/g) ?? []).length, 6);
   assert.match(html, /APPROVAL ≠ USE/);
-  assert.match(html, /LEARNING STAYS LOCAL/);
+  assert.match(html, /ACCESS ≠ ADOPTION/);
 
   const pathwaySource = sectionSource('pathway');
   const zoneSections = [...pathwaySource.matchAll(
@@ -181,6 +181,14 @@ test('ships three semantic pathway zones and explicit handoff failures', () => {
   assert.match(html, /class="feedback-loop"/);
   assert.match(pathwaySource, /<h4>Contracting and access<\/h4>/);
   assert.match(pathwaySource, /<h4>Implementation owner<\/h4>/);
+  const implementationStart = pathwaySource.indexOf(
+    '<span class="route-node" aria-hidden="true">06</span>');
+  const implementationEnd = pathwaySource.indexOf('</li>', implementationStart);
+  const implementationNode = pathwaySource.slice(implementationStart, implementationEnd);
+  assert.match(implementationNode,
+    /<span>HANDOFF FAILURE<\/span> ACCESS ≠ ADOPTION/);
+  assert.doesNotMatch(implementationNode, /\b(?:field )?learning\b/i,
+    'the implementation handoff alert must not claim a field-learning failure');
   assert.equal((pathwaySource.match(/Field learning/gi) ?? []).length, 1,
     'field learning belongs only in the feedback-loop sentence');
 });
@@ -335,7 +343,7 @@ test('keeps the live cover labels and compact apparatus contract', () => {
     html.indexOf('</figure>', html.indexOf('<figure class="cover-apparatus"')));
   assert.deepEqual([...coverSource.matchAll(/<span>([^<]+)<\/span>/g)]
     .map((match) => match[1]),
-  ['STALL SIGNAL', 'NAMED BREAK', 'OWNER', 'SMALLEST MOVE']);
+  ['STALL SIGNAL', 'PATHWAY INSPECTION', 'NAMED BREAK', 'OWNER + SMALLEST MOVE']);
   assert.doesNotMatch(coverSource, /aria-hidden/);
   assert.match(css, /@media\s*\(max-width:\s*360px\)[\s\S]*?\.cover-apparatus img\s*\{[^}]*height:\s*(?:5\.25rem|84px)\s*;/s);
 });
