@@ -42,7 +42,7 @@
         <p class="scope-line">For teams facing stalled deals, fragile launches, or a sales motion that depends on one heroic person.</p>
         <figure class="cover-apparatus" data-visual-signature="cover-apparatus" data-mobile-dominant>
           <img src="./assets/visuals/cover-apparatus.svg" alt="" width="640" height="240">
-          <figcaption><span>STALL SIGNAL</span><span>PATHWAY INSPECTION</span><span>OWNER + MOVE</span></figcaption>
+          <figcaption><span>STALL SIGNAL</span><span>NAMED BREAK</span><span>OWNER</span><span>SMALLEST MOVE</span></figcaption>
         </figure>
         <nav class="cover-actions" aria-label="Explore the field document">
           <a class="primary-action" href="#failure-register">Find where the pathway breaks</a>
@@ -71,7 +71,6 @@
         <p class="section-code">01 / FAILURE REGISTER</p>
         <h2 id="failure-title">Where the commercial motion actually breaks.</h2>
         <p>The formal question is what the meeting says. The operator translation is what the field hears.</p>
-        <p class="diagnostic-reframe">The commercial pathway is broken.</p>
       </header>
 
       <div class="fault-family-visual" data-visual-signature="failure-plate">
@@ -84,52 +83,65 @@
       </div>
 
       <div class="failure-rows">
-        <details data-failure-family="decision-story" open>
-          <summary>
-            <span>Commercial story</span>
-            <span>Does the pitch create a decision?</span>
-            <span class="operator-translation">The deck has 47 slides and no decision.</span>
-          </summary>
-          <p><strong>Pressure-test:</strong> Which decision should this meeting create? What can disappear without weakening it?</p>
-        </details>
-        <details data-failure-family="stakeholder-pathway">
-          <summary>
-            <span>Sales motion</span>
-            <span>Can the process work without one heroic person?</span>
-            <span class="operator-translation">The process is scalable, provided the founder attends every call.</span>
-          </summary>
-          <p><strong>Pressure-test:</strong> What breaks when the heroic person stays home?</p>
-        </details>
-        <details data-failure-family="stakeholder-pathway">
-          <summary>
-            <span>Leadership</span>
-            <span>Is ownership unambiguous?</span>
-            <span class="operator-translation">Everyone owns it, so no one owns it.</span>
-          </summary>
-          <p><strong>Pressure-test:</strong> Who owns the next move, by when, and who only needs visibility?</p>
-        </details>
-        <details data-failure-family="field-transfer">
-          <summary>
-            <span>Team build</span>
-            <span>Are roles connected by an operating system?</span>
-            <span class="operator-translation">You hired résumés and hoped they would form a company.</span>
-          </summary>
-          <p><strong>Pressure-test:</strong> Which handoff currently depends on goodwill, memory, or rescue?</p>
-        </details>
-        <details data-failure-family="field-transfer">
-          <summary>
-            <span>Launch readiness</span>
-            <span>Does the work support the calendar?</span>
-            <span class="operator-translation">The calendar says launch. The work was not consulted.</span>
-          </summary>
-          <p><strong>Pressure-test:</strong> Which decision, evidence handoff, or field capability must be real before the date means anything?</p>
-        </details>
+        <section class="failure-family" aria-labelledby="failure-family-decision-story">
+          <h3 id="failure-family-decision-story">Decision story</h3>
+          <details data-failure-family="decision-story" open>
+            <summary>
+              <span>Commercial story</span>
+              <span>Does the pitch create a decision?</span>
+              <span class="operator-translation">The deck has 47 slides and no decision.</span>
+            </summary>
+            <p><strong>Pressure-test:</strong> Which decision should this meeting create? What can disappear without weakening it?</p>
+          </details>
+        </section>
+        <section class="failure-family" aria-labelledby="failure-family-stakeholder-pathway">
+          <h3 id="failure-family-stakeholder-pathway">Stakeholder pathway</h3>
+          <details data-failure-family="stakeholder-pathway">
+            <summary>
+              <span>Sales motion</span>
+              <span>Can the process work without one heroic person?</span>
+              <span class="operator-translation">The process is scalable, provided the founder attends every call.</span>
+            </summary>
+            <p><strong>Pressure-test:</strong> What breaks when the heroic person stays home?</p>
+          </details>
+          <details data-failure-family="stakeholder-pathway">
+            <summary>
+              <span>Leadership</span>
+              <span>Is ownership unambiguous?</span>
+              <span class="operator-translation">Everyone owns it, so no one owns it.</span>
+            </summary>
+            <p><strong>Pressure-test:</strong> Who owns the next move, by when, and who only needs visibility?</p>
+          </details>
+        </section>
+        <section class="failure-family" aria-labelledby="failure-family-field-transfer">
+          <h3 id="failure-family-field-transfer">Field transfer</h3>
+          <details data-failure-family="field-transfer">
+            <summary>
+              <span>Team build</span>
+              <span>Are roles connected by an operating system?</span>
+              <span class="operator-translation">You hired résumés and hoped they would form a company.</span>
+            </summary>
+            <p><strong>Pressure-test:</strong> Which handoff currently depends on goodwill, memory, or rescue?</p>
+          </details>
+          <details data-failure-family="field-transfer">
+            <summary>
+              <span>Launch readiness</span>
+              <span>Does the work support the calendar?</span>
+              <span class="operator-translation">The calendar says launch. The work was not consulted.</span>
+            </summary>
+            <p><strong>Pressure-test:</strong> Which decision, evidence handoff, or field capability must be real before the date means anything?</p>
+          </details>
+        </section>
+      </div>
+      <div class="failure-diagnosis">
+        <p>When these recurring signals persist across functions, the diagnosis is direct.</p>
+        <p class="diagnostic-reframe">The commercial pathway is broken.</p>
       </div>
     </section>
 
     <section id="pathway" class="pathway reveal" data-section-id="pathway" aria-labelledby="pathway-title">
       <header class="section-heading">
-        <p class="section-code">03 / BUYING ROLES &amp; HANDOFFS</p>
+        <p class="section-code">02 / BUYING ROLES &amp; HANDOFFS</p>
         <h2 id="pathway-title">A funnel is not a buying environment.</h2>
         <p>Map who uses, champions, funds, approves, implements, and learns. Then mark the handoff where momentum dies.</p>
       </header>
@@ -138,11 +150,6 @@
 
       <div class="pathway-environment" data-visual-signature="decision-environment" data-mobile-dominant>
         <p class="working-model-label">ILLUSTRATIVE WORKING MODEL / ROLES AND ORDER VARY</p>
-        <div class="pathway-zone-labels" aria-hidden="true">
-          <span data-pathway-zone="adoption"><strong>Adoption</strong></span>
-          <span data-pathway-zone="approval"><strong>Resource and approval</strong></span>
-          <span data-pathway-zone="operationalization"><strong>Operationalization</strong></span>
-        </div>
         <div class="pathway-field">
           <svg class="pathway-line" aria-hidden="true" focusable="false" viewBox="0 0 1200 640" preserveAspectRatio="none">
             <defs>
@@ -153,100 +160,115 @@
             <path class="zone-spine" d="M 200 22 V 596"/>
             <path class="zone-spine" d="M 600 22 V 596"/>
             <path class="zone-spine" d="M 1000 22 V 596"/>
-            <path class="cross-zone-gate" d="M 200 310 H 600" marker-end="url(#route-arrow)"/>
-            <path class="cross-zone-gate cross-zone-gate-risk" d="M 600 310 H 1000" marker-end="url(#route-arrow)"/>
+            <path class="cross-zone-gate" d="M 200 310 H 600"/>
+            <path class="cross-zone-gate cross-zone-gate-risk" d="M 600 310 H 1000"/>
             <polyline class="feedback-route" points="1000,596 1128,596 1128,22 200,22" marker-end="url(#route-arrow)"/>
           </svg>
 
-          <ol class="pathway-route" role="list">
-        <li data-node-zone="adoption">
-          <span class="route-node" aria-hidden="true">01</span>
-          <p class="route-label">01 / USER</p>
-          <h3>User</h3>
-          <p><strong>Must decide:</strong> Whether the change works in the real use environment.</p>
-          <p><strong>Breaks when:</strong> Workflow burden and adoption friction stay invisible.</p>
-        </li>
-        <li data-node-zone="adoption">
-          <span class="route-node" aria-hidden="true">02</span>
-          <p class="route-label">02 / CHAMPION</p>
-          <h3>Clinical champion</h3>
-          <p><strong>Must decide:</strong> Whether the value is defensible enough to carry forward.</p>
-          <p><strong>Breaks when:</strong> The story outruns responsible evidence and stakeholder trust.</p>
-        </li>
-        <li data-node-zone="approval">
-          <span class="route-node" aria-hidden="true">03</span>
-          <p class="route-label">03 / BUYER</p>
-          <h3>Economic buyer</h3>
-          <p><strong>Must decide:</strong> Whether the tradeoff deserves resources now.</p>
-          <p><strong>Breaks when:</strong> The ask, owner, or economic consequence remains vague.</p>
-        </li>
-        <li data-node-zone="approval">
-          <span class="route-node" aria-hidden="true">04</span>
-          <p class="route-alert"><span>HANDOFF FAILURE</span> APPROVAL ≠ USE</p>
-          <p class="route-label">04 / APPROVAL</p>
-          <h3>Value analysis and approval</h3>
-          <p><strong>Must decide:</strong> Whether evidence, risk, and claims fit the decision.</p>
-          <p><strong>Breaks when:</strong> Questions surface after the meeting that the pitch never prepared for.</p>
-        </li>
-        <li data-node-zone="operationalization">
-          <span class="route-node" aria-hidden="true">05</span>
-          <p class="route-label">05 / IMPLEMENTATION</p>
-          <h3>Contracting and implementation</h3>
-          <p><strong>Must decide:</strong> Whether evidence fit, resource impact, terms, and ownership support use.</p>
-          <p><strong>Breaks when:</strong> Approval arrives without workable handoffs or an implementation path.</p>
-        </li>
-        <li data-node-zone="operationalization">
-          <span class="route-node" aria-hidden="true">06</span>
-          <p class="route-alert"><span>HANDOFF FAILURE</span> LEARNING STAYS LOCAL</p>
-          <p class="route-label">06 / FIELD LEARNING</p>
-          <h3>Field learning and repeatability</h3>
-          <p><strong>Must decide:</strong> Which win and loss signals should change the motion.</p>
-          <p><strong>Breaks when:</strong> Learning stays with individuals instead of changing the system.</p>
-        </li>
-        </ol>
+          <div class="pathway-groups">
+            <section class="pathway-zone" aria-labelledby="pathway-zone-adoption">
+              <h3 id="pathway-zone-adoption" class="pathway-zone-title">Adoption</h3>
+              <ol class="pathway-zone-route" role="list">
+                <li>
+                  <span class="route-node" aria-hidden="true">01</span>
+                  <p class="route-label">01 / USER</p>
+                  <h4>User</h4>
+                  <p><strong>Must decide:</strong> Whether the change works in the real use environment.</p>
+                  <p><strong>Breaks when:</strong> Workflow burden and adoption friction stay invisible.</p>
+                </li>
+                <li>
+                  <span class="route-node" aria-hidden="true">02</span>
+                  <p class="route-label">02 / CHAMPION</p>
+                  <h4>Clinical champion</h4>
+                  <p><strong>Must decide:</strong> Whether the value is defensible enough to carry forward.</p>
+                  <p><strong>Breaks when:</strong> The story outruns responsible evidence and stakeholder trust.</p>
+                </li>
+              </ol>
+            </section>
+            <section class="pathway-zone" aria-labelledby="pathway-zone-approval">
+              <h3 id="pathway-zone-approval" class="pathway-zone-title">Resource and approval</h3>
+              <ol class="pathway-zone-route" role="list">
+                <li>
+                  <span class="route-node" aria-hidden="true">03</span>
+                  <p class="route-label">03 / BUYER</p>
+                  <h4>Economic buyer</h4>
+                  <p><strong>Must decide:</strong> Whether the tradeoff deserves resources now.</p>
+                  <p><strong>Breaks when:</strong> The ask, owner, or economic consequence remains vague.</p>
+                </li>
+                <li>
+                  <span class="route-node" aria-hidden="true">04</span>
+                  <p class="route-alert"><span>HANDOFF FAILURE</span> APPROVAL ≠ USE</p>
+                  <p class="route-label">04 / APPROVAL</p>
+                  <h4>Value analysis and approval</h4>
+                  <p><strong>Must decide:</strong> Whether evidence, risk, and claims fit the decision.</p>
+                  <p><strong>Breaks when:</strong> Questions surface after the meeting that the pitch never prepared for.</p>
+                </li>
+              </ol>
+            </section>
+            <section class="pathway-zone" aria-labelledby="pathway-zone-operationalization">
+              <h3 id="pathway-zone-operationalization" class="pathway-zone-title">Operationalization</h3>
+              <ol class="pathway-zone-route" role="list">
+                <li>
+                  <span class="route-node" aria-hidden="true">05</span>
+                  <p class="route-label">05 / CONTRACTING</p>
+                  <h4>Contracting and access</h4>
+                  <p><strong>Must decide:</strong> Whether evidence fit, resource impact, terms, and access requirements support use.</p>
+                  <p><strong>Breaks when:</strong> Approval arrives without workable contracting or access handoffs.</p>
+                </li>
+                <li>
+                  <span class="route-node" aria-hidden="true">06</span>
+                  <p class="route-alert"><span>HANDOFF FAILURE</span> LEARNING STAYS LOCAL</p>
+                  <p class="route-label">06 / IMPLEMENTATION</p>
+                  <h4>Implementation owner</h4>
+                  <p><strong>Must decide:</strong> Whether one internal owner can coordinate readiness for repeatable use.</p>
+                  <p><strong>Breaks when:</strong> Training, logistics, and ownership depend on goodwill, memory, or rescue.</p>
+                </li>
+              </ol>
+            </section>
+          </div>
         </div>
-        <p class="feedback-loop">Field learning returns to story, evidence, implementation, and repeatability.</p>
+        <p class="feedback-loop">Field learning returns to story, evidence, access, implementation, and repeatability.</p>
       </div>
     </section>
 
     <section id="engagements" class="engagements reveal" data-section-id="engagements" aria-labelledby="engagements-title">
       <header class="section-heading">
-        <p class="section-code">02 / WAYS TO USE THE DUO</p>
+        <p class="section-code">03 / WAYS TO USE THE DUO</p>
         <h2 id="engagements-title">Bring the problem that keeps surviving the meeting.</h2>
       </header>
 
       <ul class="engagement-selector" role="list" data-visual-signature="engagement-selector">
         <li><span>Conflicting handoff diagnoses</span><strong>Pathway Autopsy</strong></li>
         <li><span>Explanation without a decision</span><strong>Pitch Decontamination</strong></li>
-        <li><span>Motion depends on a hero</span><strong>Field Transfer</strong></li>
+        <li><span>The motion cannot transfer to the field</span><strong>Field Transfer</strong></li>
       </ul>
 
       <div class="engagement-rows">
         <article>
           <header><p class="engagement-code">ENGAGEMENT / 01</p><h3>Pathway Autopsy</h3></header>
           <dl>
-            <div><dt>Use when</dt><dd>Deals stall at different handoffs and every function offers a different diagnosis.</dd></div>
-            <div><dt>Working format</dt><dd>A cross-functional review of one live commercial pathway: stakeholders, decisions, evidence, ownership, and handoffs.</dd></div>
-            <div><dt>Who joins</dt><dd>The commercial owner, field lead, the person responsible for clinical adoption, and owners of the handoffs under review.</dd></div>
-            <div><dt>Hand-back</dt><dd>An annotated stakeholder pathway, named failure points, priority decisions, owners, and next moves.</dd></div>
+            <div class="engagement-primary"><dt>Use when</dt><dd>Deals stall at different handoffs and every function offers a different diagnosis.</dd></div>
+            <div class="engagement-primary"><dt>Hand-back</dt><dd>An annotated stakeholder pathway, named failure points, priority decisions, owners, and next moves.</dd></div>
+            <div class="engagement-detail"><dt>Working format</dt><dd>A cross-functional review of one live commercial pathway: stakeholders, decisions, evidence, ownership, and handoffs.</dd></div>
+            <div class="engagement-detail"><dt>Who joins</dt><dd>The commercial owner, field lead, the person responsible for clinical adoption, and owners of the handoffs under review.</dd></div>
           </dl>
         </article>
         <article>
           <header><p class="engagement-code">ENGAGEMENT / 02</p><h3>Pitch Decontamination</h3></header>
           <dl>
-            <div><dt>Use when</dt><dd>The deck explains the product but still does not create a decision.</dd></div>
-            <div><dt>Working format</dt><dd>A red-team pass against actual buyer roles, responsible evidence, decision sequence, and internal claims-review boundaries.</dd></div>
-            <div><dt>Who joins</dt><dd>The pitch owner, commercial lead, the person representing clinical reality, and appropriate internal evidence or claims owners.</dd></div>
-            <div><dt>Hand-back</dt><dd>A decision narrative, evidence sequence, unresolved questions, and a claims-review handoff for the appropriate internal owners.</dd></div>
+            <div class="engagement-primary"><dt>Use when</dt><dd>The deck explains the product but still does not create a decision.</dd></div>
+            <div class="engagement-primary"><dt>Hand-back</dt><dd>A decision narrative, evidence sequence, unresolved questions, and a claims-review handoff for the appropriate internal owners.</dd></div>
+            <div class="engagement-detail"><dt>Working format</dt><dd>A red-team pass against actual buyer roles, responsible evidence, decision sequence, and internal claims-review boundaries.</dd></div>
+            <div class="engagement-detail"><dt>Who joins</dt><dd>The pitch owner, commercial lead, the person representing clinical reality, and appropriate internal evidence or claims owners.</dd></div>
           </dl>
         </article>
         <article>
           <header><p class="engagement-code">ENGAGEMENT / 03</p><h3>Field Transfer</h3></header>
           <dl>
-            <div><dt>Use when</dt><dd>The commercial motion depends on one founder, veteran, or heroic field operator.</dd></div>
-            <div><dt>Working format</dt><dd>A working review of repeatable moves, role boundaries, handoffs, and field-learning loops.</dd></div>
-            <div><dt>Who joins</dt><dd>The commercial leader, field representatives, operations or enablement owners, and relevant clinical-adoption partners.</dd></div>
-            <div><dt>Hand-back</dt><dd>A field operating map, ownership matrix, handoff checklist, and route for feeding wins and losses back into the system.</dd></div>
+            <div class="engagement-primary"><dt>Use when</dt><dd>The commercial motion depends on one founder, veteran, or heroic field operator.</dd></div>
+            <div class="engagement-primary"><dt>Hand-back</dt><dd>A field operating map, ownership matrix, handoff checklist, and route for feeding wins and losses back into the system.</dd></div>
+            <div class="engagement-detail"><dt>Working format</dt><dd>A working review of repeatable moves, role boundaries, handoffs, and field-learning loops.</dd></div>
+            <div class="engagement-detail"><dt>Who joins</dt><dd>The commercial leader, field representatives, operations or enablement owners, and relevant clinical-adoption partners.</dd></div>
           </dl>
         </article>
       </div>
@@ -370,9 +392,10 @@
           <li>Where does momentum actually die?</li>
           <li>Who owns the next move, and by when?</li>
         </ol>
-        <p class="gut-check-interpretation">Conflicting answers across functions are a pathway problem. Match the live break to the engagement built for it.</p>
+        <p class="gut-check-interpretation">Conflicting cross-functional answers are a signal of a pathway problem.</p>
       </details>
 
+      <a class="gut-check-action" href="#engagements">Match the live break to an engagement</a>
       <button class="copy-gut-check" type="button" hidden>Copy the five-question gut-check</button>
       <p class="copy-status" aria-live="polite"></p>
       <textarea class="copy-fallback" aria-label="Commercial gut-check plain text" readonly hidden></textarea>

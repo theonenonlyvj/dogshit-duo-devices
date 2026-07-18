@@ -44,6 +44,9 @@ test.after(async () => {
 const viewports = [
   { name: 'desktop', width: 1280, height: 720, maxDocumentHeight: 7400 },
   { name: 'small-mobile', width: 320, height: 700, maxDocumentHeight: 11400 },
+  { name: 'small-mobile-340', width: 340, height: 700, maxDocumentHeight: 11400 },
+  { name: 'small-mobile-360', width: 360, height: 700, maxDocumentHeight: 11400 },
+  { name: 'small-mobile-361', width: 361, height: 700, maxDocumentHeight: 11400 },
   { name: 'mobile', width: 390, height: 844, maxDocumentHeight: 10225 },
   { name: 'large-mobile', width: 430, height: 932, maxDocumentHeight: 9950 },
 ];
@@ -67,7 +70,7 @@ for (const viewport of viewports) {
           left: value.left, width: value.width, height: value.height } : null;
       };
       const targets = [...document.querySelectorAll(
-        'button:not([hidden]), summary, .cover-actions a, .field-index a')]
+        'button:not([hidden]), summary, .cover-actions a, .field-index a, .gut-check-action')]
         .filter((element) => {
           const style = getComputedStyle(element);
           return style.display !== 'none' && style.visibility !== 'hidden' &&
@@ -84,17 +87,19 @@ for (const viewport of viewports) {
         documentHeight: document.documentElement.scrollHeight,
         cover: rect('.document-cover'),
         coverVisual: rect('[data-visual-signature="cover-apparatus"]'),
+        coverImage: rect('.cover-apparatus img'),
         primaryAction: rect('.primary-action'),
         register: rect('.operator-register'),
+        gutCheckAction: rect('.gut-check-action'),
         pathway: rect('#pathway'),
         sections: Object.fromEntries(['name-reveal', 'failure-register',
           'engagements', 'pathway', 'operators', 'manifesto', 'gut-check']
           .map((id) => [id, rect(`#${id}`)?.height])),
         routeLineDisplay: getComputedStyle(
           document.querySelector('.pathway-line')).display,
-        routeTops: [...document.querySelectorAll('.pathway-route > li')]
+        routeTops: [...document.querySelectorAll('.pathway-zone-route > li')]
           .map((item) => item.getBoundingClientRect().top),
-        routeLefts: [...document.querySelectorAll('.pathway-route > li')]
+        routeLefts: [...document.querySelectorAll('.pathway-zone-route > li')]
           .map((item) => item.getBoundingClientRect().left),
         visualSignatures: [...document.querySelectorAll('[data-visual-signature]')]
           .map((element) => ({
@@ -110,10 +115,22 @@ for (const viewport of viewports) {
             name: element.dataset.visualSignature,
             height: element.getBoundingClientRect().height,
           })),
-        zoneLefts: [...document.querySelectorAll('[data-node-zone]')]
+        zoneLefts: [...document.querySelectorAll('.pathway-zone')]
           .map((element) => element.getBoundingClientRect().left),
-        zoneTops: [...document.querySelectorAll('[data-node-zone]')]
+        zoneTops: [...document.querySelectorAll('.pathway-zone')]
           .map((element) => element.getBoundingClientRect().top),
+        zoneNodeCounts: [...document.querySelectorAll('.pathway-zone')]
+          .map((element) => element.querySelectorAll('.pathway-zone-route > li').length),
+        phoneNodeConnectors: [...document.querySelectorAll('.pathway-zone-route > li')]
+          .map((element) => getComputedStyle(element, '::after').content),
+        engagementPrimaryWeights: [...document.querySelectorAll('.engagement-primary dd')]
+          .map((element) => Number.parseInt(getComputedStyle(element).fontWeight, 10)),
+        engagementDetailWeights: [...document.querySelectorAll('.engagement-detail dd')]
+          .map((element) => Number.parseInt(getComputedStyle(element).fontWeight, 10)),
+        engagementLabelSizes: [...document.querySelectorAll('.engagement-rows dt')]
+          .map((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
+        ledgerLabelSizes: [...document.querySelectorAll('.ledger-row dt')]
+          .map((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
         h1Size: Number.parseFloat(getComputedStyle(document.querySelector('h1')).fontSize),
         h2Size: Number.parseFloat(getComputedStyle(document.querySelector('h2')).fontSize),
         footerSize: Number.parseFloat(getComputedStyle(document.querySelector('footer')).fontSize),
@@ -135,6 +152,18 @@ for (const viewport of viewports) {
     assert.ok(metrics.displayFontReady && metrics.textFontReady,
       'self-hosted fonts should be loaded');
     assert.ok(metrics.footerSize >= 14, 'footer text must remain readable');
+    assert.deepEqual(metrics.zoneNodeCounts, [2, 2, 2]);
+    assert.equal(metrics.engagementPrimaryWeights.length, 6);
+    assert.equal(metrics.engagementDetailWeights.length, 6);
+    assert.ok(metrics.engagementPrimaryWeights.every((weight, index) =>
+      weight > metrics.engagementDetailWeights[index]),
+    'Use when and Hand-back must outrank engagement detail fields');
+    assert.ok(metrics.engagementLabelSizes.every((size) => size >= 11.5),
+      'engagement labels must be at least 0.72rem');
+    assert.ok(metrics.ledgerLabelSizes.every((size) => size >= 11.5),
+      'ledger labels must be at least 0.72rem');
+    assert.ok(metrics.gutCheckAction && metrics.gutCheckAction.height >= 43.5,
+      'the internal engagement route must meet the 44px target');
     assert.equal(metrics.visualSignatures.length, 8);
     assert.ok(metrics.visualSignatures.every((visual) =>
       visual.display !== 'none' && visual.visibility !== 'hidden' &&
@@ -154,14 +183,16 @@ for (const viewport of viewports) {
       assert.notEqual(metrics.routeLineDisplay, 'none');
       assert.equal(metrics.activeIndexLabelOpacity, '0',
         'the active index label must not cover page copy');
-      assert.ok(Math.abs(metrics.zoneLefts[0] - metrics.zoneLefts[1]) < 2);
-      assert.ok(Math.abs(metrics.zoneLefts[2] - metrics.zoneLefts[3]) < 2);
-      assert.ok(Math.abs(metrics.zoneLefts[4] - metrics.zoneLefts[5]) < 2);
-      assert.ok(metrics.zoneLefts[0] < metrics.zoneLefts[2] &&
-        metrics.zoneLefts[2] < metrics.zoneLefts[4]);
+      assert.equal(metrics.zoneLefts.length, 3);
+      assert.ok(metrics.zoneLefts[0] < metrics.zoneLefts[1] &&
+        metrics.zoneLefts[1] < metrics.zoneLefts[2]);
     } else {
       assert.equal(metrics.routeLineDisplay, 'none');
       assert.ok(metrics.coverVisual.top < viewport.height);
+      assert.ok(metrics.coverImage.height >= 83.5,
+        'the phone apparatus image itself must visibly occupy at least 84px');
+      assert.ok(metrics.coverImage.width >= metrics.coverVisual.width * 0.8,
+        'the phone apparatus image must occupy most of the content width');
       assert.ok(metrics.coverVisual.bottom <= metrics.primaryAction.top + 1,
         'the phone cover apparatus must lead directly into the primary action');
       assert.ok(metrics.register.bottom <= viewport.height,
@@ -174,13 +205,28 @@ for (const viewport of viewports) {
         'ledger-anatomy',
       ]);
       assert.ok(metrics.mobileDominant.every((visual) => visual.height >= 83.5));
+      assert.equal(metrics.zoneTops.length, 3);
       assert.ok(metrics.zoneTops.every((top, index, values) =>
         index === 0 || top > values[index - 1]), 'phone nodes follow semantic order');
       assert.ok(metrics.routeTops.every((top, index, values) =>
-        index === 0 || top > values[index - 1]), 'mobile route follows 01–06');
+        index === 0 || top > values[index - 1]), 'mobile zone lists stack without a universal timeline');
+      assert.ok(metrics.phoneNodeConnectors.every((content) =>
+        content === 'none' || content === 'normal'),
+      'phone zone lists must not draw down-arrow connectors');
       const maxPathwayHeight = viewport.width <= 360 ? 1950 : 1680;
       assert.ok(metrics.pathway.height <= maxPathwayHeight,
         `mobile pathway should be compressed: ${metrics.pathway.height}`);
+
+      if (viewport.height === 700 && viewport.width <= 361) {
+        for (const [name, geometry] of Object.entries({
+          apparatus: metrics.coverVisual,
+          primaryAction: metrics.primaryAction,
+          operatorRegister: metrics.register,
+        })) {
+          assert.ok(geometry.top >= 0 && geometry.bottom <= viewport.height + 1,
+            `${name} must fit completely inside the 700px boundary viewport`);
+        }
+      }
     }
 
     assert.deepEqual(errors, []);

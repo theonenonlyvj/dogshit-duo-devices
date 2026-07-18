@@ -16,6 +16,14 @@ const implementationPlan = await readFile(new URL(
   import.meta.url), 'utf8');
 const personalName = String.fromCodePoint(86, 105, 106, 97, 121);
 
+function sectionSource(id) {
+  const start = html.indexOf(`<section id="${id}"`);
+  const nextSection = html.indexOf('\n    <section id="', start + 1);
+  const end = nextSection >= 0 ? nextSection : html.indexOf('\n  </main>', start);
+  assert.ok(start >= 0 && end > start, `Missing section source: ${id}`);
+  return html.slice(start, end);
+}
+
 function assertAuthoredSvgSource(source) {
   assert.doesNotMatch(source, /<text\b|<script\b|data:/i);
 
@@ -28,6 +36,22 @@ function assertAuthoredSvgSource(source) {
       reference,
       /^(?:\/\/|[a-z][a-z\d+.-]*:)/i,
       `Nonlocal SVG reference: ${reference}`,
+    );
+  }
+}
+
+function assertLocalRuntimeReferences(source, label = 'source') {
+  const references = [
+    ...source.matchAll(/\b(?:href|src)\s*=\s*(["'])([^"']*)\1/gi),
+    ...source.matchAll(/\burl\(\s*(["']?)([^)'"\s]+)\1\s*\)/gi),
+    ...source.matchAll(/@import\s+(?:url\(\s*)?(["'])([^"']+)\1/gi),
+  ].map((match) => match[2].trim());
+
+  for (const reference of references) {
+    assert.doesNotMatch(
+      reference,
+      /^(?:\/\/|[a-z][a-z\d+.-]*:)/i,
+      `External runtime reference in ${label}: ${reference}`,
     );
   }
 }
@@ -96,6 +120,26 @@ test('maps five failure signals to three engagement families', () => {
   for (const family of ['Decision story', 'Stakeholder pathway', 'Field transfer']) {
     assert.match(html, new RegExp(`<strong>${family}<\\/strong>`));
   }
+
+  const failureSource = sectionSource('failure-register');
+  const familySections = [...failureSource.matchAll(
+    /<section class="failure-family"[^>]*aria-labelledby="([^"]+)"[^>]*>([\s\S]*?)<\/section>/g,
+  )];
+  assert.equal(familySections.length, 3);
+  assert.deepEqual(familySections.map((match) =>
+    match[2].match(/<details\b/g)?.length ?? 0), [1, 2, 2]);
+  for (const [headingId, familySource] of familySections.map(
+    (match) => [match[1], match[2]])) {
+    assert.match(familySource, new RegExp(`<h3 id="${headingId}"`));
+  }
+
+  const finalDisclosure = failureSource.lastIndexOf('</details>');
+  const diagnosis = failureSource.indexOf(
+    '<p class="diagnostic-reframe">The commercial pathway is broken.</p>');
+  assert.ok(finalDisclosure >= 0 && diagnosis > finalDisclosure,
+    'the supported diagnosis must follow all five disclosures');
+  assert.match(failureSource.slice(finalDisclosure, diagnosis),
+    /recurring signals persist/i);
 });
 
 test('uses decision signals and routes claims to internal owners', () => {
@@ -106,29 +150,44 @@ test('uses decision signals and routes claims to internal owners', () => {
   assert.match(html, /Serious operators\. Unfortunate name\./);
 });
 
-test('ships the continuous signature route and explicit handoff failures', () => {
+test('ships three semantic pathway zones and explicit handoff failures', () => {
   assert.match(html, /<svg[^>]*class="pathway-line"[^>]*aria-hidden="true"/s);
   assert.match(html, /<polyline/);
   assert.equal((html.match(/HANDOFF FAILURE/g) ?? []).length, 2);
   assert.equal((html.match(/class="route-node"/g) ?? []).length, 6);
   assert.match(html, /APPROVAL ≠ USE/);
   assert.match(html, /LEARNING STAYS LOCAL/);
-});
 
-test('ships the signature stakeholder decision environment', () => {
-  assert.match(html, /class="pathway-environment"/);
-  assert.equal((html.match(/data-pathway-zone=/g) ?? []).length, 3);
-  for (const zone of ['Adoption', 'Resource and approval', 'Operationalization']) {
-    assert.match(html, new RegExp(`<strong>${zone}<\\/strong>`));
+  const pathwaySource = sectionSource('pathway');
+  const zoneSections = [...pathwaySource.matchAll(
+    /<section class="pathway-zone"[^>]*aria-labelledby="([^"]+)"[^>]*>([\s\S]*?)<\/section>/g,
+  )];
+  assert.equal(zoneSections.length, 3);
+  assert.deepEqual(zoneSections.map((match) =>
+    match[2].match(/<li\b/g)?.length ?? 0), [2, 2, 2]);
+  assert.deepEqual(zoneSections.map((match) =>
+    match[2].match(/<ol class="pathway-zone-route" role="list">/g)?.length ?? 0),
+  [1, 1, 1]);
+  for (const [headingId, zoneSource] of zoneSections.map(
+    (match) => [match[1], match[2]])) {
+    assert.match(zoneSource, new RegExp(`<h3 id="${headingId}"`));
   }
+  assert.doesNotMatch(pathwaySource, /class="pathway-zone-labels"|<ol class="pathway-route"/);
+  assert.doesNotMatch(pathwaySource,
+    /class="cross-zone-gate[^"]*"[^>]*marker-(?:start|mid|end)=/);
+  assert.match(pathwaySource,
+    /class="feedback-route"[^>]*marker-end="url\(#route-arrow\)"/);
   assert.match(html, /ILLUSTRATIVE WORKING MODEL/);
   assert.match(html, /class="feedback-loop"/);
-  assert.equal((html.match(/class="route-node"/g) ?? []).length, 6);
-  assert.equal((html.match(/HANDOFF FAILURE/g) ?? []).length, 2);
+  assert.match(pathwaySource, /<h4>Contracting and access<\/h4>/);
+  assert.match(pathwaySource, /<h4>Implementation owner<\/h4>/);
+  assert.equal((pathwaySource.match(/Field learning/gi) ?? []).length, 1,
+    'field learning belongs only in the feedback-loop sentence');
 });
 
 test('gives every sales chapter an intentional visual signature', () => {
   const signatures = html.match(/data-visual-signature="[^"]+"/g) ?? [];
+  assert.equal(signatures.length, 8);
   assert.equal(new Set(signatures).size, 8);
   for (const name of ['cover-apparatus', 'failure-plate', 'decision-environment',
     'engagement-selector', 'method-convergence', 'ledger-anatomy', 'ddd-plate',
@@ -142,6 +201,20 @@ test('makes every engagement forwardable without invented durations', () => {
     assert.equal((html.match(new RegExp(`<dt>${label}<\\/dt>`, 'g')) ?? []).length, 3);
   }
   assert.doesNotMatch(html, /\b(?:hour|day|week|month|quarter)s?\b/i);
+
+  const engagementSource = sectionSource('engagements');
+  const articles = [...engagementSource.matchAll(/<article>([\s\S]*?)<\/article>/g)]
+    .map((match) => match[1]);
+  assert.equal(articles.length, 3);
+  for (const article of articles) {
+    assert.deepEqual([...article.matchAll(/<dt>([^<]+)<\/dt>/g)]
+      .map((match) => match[1]),
+    ['Use when', 'Hand-back', 'Working format', 'Who joins']);
+    assert.equal((article.match(/class="engagement-primary"/g) ?? []).length, 2);
+    assert.equal((article.match(/class="engagement-detail"/g) ?? []).length, 2);
+  }
+  assert.match(engagementSource, /The motion cannot transfer to the field/);
+  assert.doesNotMatch(engagementSource, /Motion depends on a hero/);
 });
 
 test('puts scar tissue on the scan and pressure tests in disclosures', () => {
@@ -198,7 +271,8 @@ test('uses the approved Field Transfer engagement label', () => {
 
 test('does not ship placeholders or personal contact channels', () => {
   const contactScanHtml = html.replace(
-    /<div class="preflight-mark"[\s\S]*?<\/div>/, '');
+    /<div class="preflight-mark"[\s\S]*?<\/div>/,
+    (preflight) => preflight.replace(/<span>0[1-5]<\/span>/g, ''));
   const visibleText = contactScanHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
   for (const forbidden of [/@[a-z0-9.-]+\.[a-z]{2,}/i,
     /\+?\d[\d\s().-]{8,}\d/, /lorem ipsum/i, /example\.com/i]) {
@@ -207,6 +281,25 @@ test('does not ship placeholders or personal contact channels', () => {
   for (const forbidden of [/href="mailto:/i, /href="tel:/i]) {
     assert.doesNotMatch(html, forbidden);
   }
+});
+
+test('keeps shipped HTML and CSS runtime references local', async () => {
+  const sources = new Map(await Promise.all([
+    'index.html', '404.html', 'styles.css', 'assets/og.html',
+  ].map(async (path) => [path, await readFile(join(projectRoot, path), 'utf8')])));
+
+  for (const [path, source] of sources) {
+    assert.doesNotThrow(() => assertLocalRuntimeReferences(source, path));
+  }
+  assert.throws(() => assertLocalRuntimeReferences(
+    '<a href="https://example.invalid">external</a>', 'fixture.html'),
+  /external runtime reference/i);
+  assert.throws(() => assertLocalRuntimeReferences(
+    '.x { background: url(//cdn.invalid/x.svg); }', 'fixture.css'),
+  /external runtime reference/i);
+  assert.throws(() => assertLocalRuntimeReferences(
+    '@import "data:text/css,bad";', 'fixture.css'),
+  /external runtime reference/i);
 });
 
 const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
@@ -237,6 +330,16 @@ test('encodes the measured cover and safe heading-wrap contracts', () => {
   assert.match(css, /@media\s*\(max-width:\s*840px\)[\s\S]*?h1\s*\{[^}]*font-size:\s*clamp\(/s);
 });
 
+test('keeps the live cover labels and compact apparatus contract', () => {
+  const coverSource = html.slice(html.indexOf('<figure class="cover-apparatus"'),
+    html.indexOf('</figure>', html.indexOf('<figure class="cover-apparatus"')));
+  assert.deepEqual([...coverSource.matchAll(/<span>([^<]+)<\/span>/g)]
+    .map((match) => match[1]),
+  ['STALL SIGNAL', 'NAMED BREAK', 'OWNER', 'SMALLEST MOVE']);
+  assert.doesNotMatch(coverSource, /aria-hidden/);
+  assert.match(css, /@media\s*\(max-width:\s*360px\)[\s\S]*?\.cover-apparatus img\s*\{[^}]*height:\s*(?:5\.25rem|84px)\s*;/s);
+});
+
 test('keeps small annotation text on contrast-safe approved tokens', () => {
   assert.match(css, /\.lens-grid article:nth-child\(2\) \.lens-code\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
   assert.match(css, /\.method-ledger li::before\s*\{[^}]*color:\s*var\(--teal\)\s*;/s);
@@ -244,8 +347,16 @@ test('keeps small annotation text on contrast-safe approved tokens', () => {
   assert.match(css, /\.route-alert span\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
 });
 
+test('keeps ledger and engagement labels readable and fit fields hierarchical', () => {
+  assert.match(css, /\.engagement-rows dt,\s*\.decision-ledger dt\s*\{[^}]*font-size:\s*0\.72rem\s*;/s);
+  assert.match(css, /@media\s*\(min-width:\s*841px\)[\s\S]*?\.engagement-rows dt\s*\{[^}]*font-size:\s*0\.72rem\s*;/s);
+  assert.match(css, /@media\s*\(max-width:\s*840px\)[\s\S]*?\.ledger-row dt\s*\{[^}]*font-size:\s*0\.72rem\s*;/s);
+  assert.match(css, /\.engagement-primary\s*\{[^}]*border-top:\s*2px solid var\(--carbon\)\s*;/s);
+  assert.match(css, /\.engagement-detail\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
+});
+
 test('preserves explicit list semantics for Safari and VoiceOver', () => {
-  assert.match(html, /<ol class="pathway-route" role="list">/);
+  assert.equal((html.match(/<ol class="pathway-zone-route" role="list">/g) ?? []).length, 3);
   assert.match(html, /<div id="procedure"[\s\S]*?<ol role="list">/);
   assert.match(html, /<ul class="manifesto-lines" role="list">/);
   assert.match(html, /<ol class="gut-check-questions" role="list">/);
@@ -416,6 +527,30 @@ test('keeps the social card to the exact approved copy and palette', async () =>
   for (const color of approvedColors.values()) {
     assert.match(socialSource.toLowerCase(), new RegExp(color));
   }
+  assert.match(socialSource,
+    /h1 span\s*\{[^}]*color:\s*var\(--orange\)\s*;/s);
+  assert.match(socialSource,
+    /<h1>INSPECT THE PATHWAY\.<br><span>NOT JUST THE FUNNEL\.<\/span><\/h1>/);
+  assert.equal((socialSource.match(/<div class="pathway-diagram"[^>]*>[\s\S]*?<span><\/span>/g) ?? []).length, 1);
+  const pathwayDiagram = socialSource.match(
+    /<div class="pathway-diagram"[^>]*>([\s\S]*?)<\/div>/)?.[1] ?? '';
+  assert.equal((pathwayDiagram.match(/<span><\/span>/g) ?? []).length, 3);
+  assert.doesNotThrow(() => assertLocalRuntimeReferences(socialSource, 'assets/og.html'));
+
+  const literalColors = socialSource.toLowerCase().match(/#[0-9a-f]{3,8}\b/g) ?? [];
+  const allowedValues = new Set(approvedColors.values());
+  assert.deepEqual([...new Set(literalColors.filter(
+    (value) => !allowedValues.has(value)))], []);
+});
+
+test('uses the corrected section codes and a qualified closing route', () => {
+  assert.match(sectionSource('pathway'), /02 \/ BUYING ROLES &amp; HANDOFFS/);
+  assert.match(sectionSource('engagements'), /03 \/ WAYS TO USE THE DUO/);
+  const gutCheck = sectionSource('gut-check');
+  assert.match(gutCheck,
+    /Conflicting cross-functional answers are a signal of a pathway problem\./);
+  assert.match(gutCheck,
+    /<a class="gut-check-action" href="#engagements">Match the live break to an engagement<\/a>/);
 });
 
 test('resolves recovery links from nested GitHub Pages URLs', async () => {
