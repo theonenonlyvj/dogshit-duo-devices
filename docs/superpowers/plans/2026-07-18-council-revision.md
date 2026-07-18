@@ -14,4 +14,4 @@
 - [x] Run automated tests and whitespace checks.
 - [x] Repeat desktop, mobile, interaction, overflow, target-size, and console visual QA.
 - [x] Request independent release review and implement any verified blocking feedback.
-- [ ] Commit anonymously, push `main`, and verify GitHub Pages over HTTPS.
+- [x] Commit anonymously, push `main`, and verify GitHub Pages over HTTPS.
