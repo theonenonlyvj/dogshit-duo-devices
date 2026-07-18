@@ -137,10 +137,25 @@ test('keeps the social card to the exact approved copy and palette', async () =>
   }
 });
 
-test('ships a relative recovery page', async () => {
+test('resolves recovery links from nested GitHub Pages URLs', async () => {
   const notFound = await readFile(new URL('../404.html', import.meta.url), 'utf8');
+  const faviconHref = notFound.match(
+    /<link\b(?=[^>]*\brel=["']icon["'])[^>]*\bhref=["']([^"']+)["']/i)?.[1];
+  const recoveryHref = notFound.match(
+    /<a\b[^>]*\bhref=["']([^"']+)["']/i)?.[1];
+
   assert.match(notFound, /This pathway does not exist\./);
-  assert.match(notFound, /href=["']\.\/["']/);
+  assert.ok(faviconHref, '404 page must include a favicon href');
+  assert.ok(recoveryHref, '404 page must include a recovery href');
+  assert.deepEqual({
+    favicon: new URL(faviconHref,
+      'https://owner.github.io/dogshit-duo-devices/a/b').href,
+    recovery: new URL(recoveryHref,
+      'https://owner.github.io/dogshit-duo-devices/a/b').href,
+  }, {
+    favicon: 'https://owner.github.io/dogshit-duo-devices/assets/favicon.svg',
+    recovery: 'https://owner.github.io/dogshit-duo-devices/',
+  });
 });
 
 test('disables Jekyll processing for the Pages source tree', async () => {
