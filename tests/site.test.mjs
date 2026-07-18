@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
@@ -102,4 +102,55 @@ test('keeps enhancement code small and progressive', async () => {
   assert.match(script, /IntersectionObserver/);
   assert.match(script, /navigator\.clipboard/);
   assert.match(script, /document/);
+});
+
+test('resolves every local href and src target', async () => {
+  const documentUrl = new URL('../index.html', import.meta.url);
+  const targets = [...html.matchAll(/\b(?:href|src)=["']([^"']+)["']/g)]
+    .map((match) => match[1])
+    .filter((target) => !/^[a-z][a-z\d+.-]*:/i.test(target));
+
+  assert.ok(targets.length > 0);
+  for (const target of targets) {
+    const targetUrl = new URL(target, documentUrl);
+    targetUrl.hash = '';
+    targetUrl.search = '';
+    await assert.doesNotReject(access(targetUrl), `Missing local target: ${target}`);
+  }
+});
+
+test('ships a 1200 by 630 PNG social card', async () => {
+  const socialCard = await readFile(new URL('../assets/og.png', import.meta.url));
+  assert.equal(socialCard.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+  assert.equal(socialCard.readUInt32BE(16), 1200);
+  assert.equal(socialCard.readUInt32BE(20), 630);
+});
+
+test('keeps the social card to the exact approved copy and palette', async () => {
+  const socialSource = await readFile(new URL('../assets/og.html', import.meta.url), 'utf8');
+  const body = socialSource.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? '';
+  const visibleText = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+
+  assert.equal(visibleText, 'DOGSHIT DUO DEVICES Clinical truth. Engineering discipline. Commercial motion. Serious operators. Unfortunate name.');
+  for (const color of approvedColors.values()) {
+    assert.match(socialSource.toLowerCase(), new RegExp(color));
+  }
+});
+
+test('ships a relative recovery page', async () => {
+  const notFound = await readFile(new URL('../404.html', import.meta.url), 'utf8');
+  assert.match(notFound, /This pathway does not exist\./);
+  assert.match(notFound, /href=["']\.\/["']/);
+});
+
+test('disables Jekyll processing for the Pages source tree', async () => {
+  await assert.doesNotReject(access(new URL('../.nojekyll', import.meta.url)));
+});
+
+test('documents local checks and the anonymous public-data boundary', async () => {
+  const readme = await readFile(new URL('../README.md', import.meta.url), 'utf8');
+  assert.match(readme, /npm test/);
+  assert.match(readme, /npm start/);
+  assert.match(readme, /public-data boundary/i);
+  assert.match(readme, /anonymous/i);
 });
