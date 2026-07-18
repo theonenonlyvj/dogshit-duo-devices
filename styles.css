@@ -66,16 +66,19 @@ h3 {
   font-family: "Arial Narrow", "Roboto Condensed", "Helvetica Neue Condensed",
     "Franklin Gothic Condensed", Arial, sans-serif;
   font-stretch: condensed;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  text-wrap: balance;
 }
 
 h1 {
-  max-width: 13ch;
-  margin-bottom: clamp(1.75rem, 4vw, 3.5rem);
-  font-size: clamp(3.1rem, 7.7vw, 7.9rem);
+  max-width: 17ch;
+  margin-bottom: clamp(1.1rem, 2.2vw, 1.8rem);
+  font-size: clamp(3.5rem, 5.35vw, 4.6rem);
   font-weight: 800;
   letter-spacing: -0.055em;
-  line-height: 0.9;
+  line-height: 0.92;
 }
 
 h2 {
@@ -171,7 +174,7 @@ button {
   gap: 2rem;
   max-width: var(--content);
   width: 100%;
-  min-height: 4.25rem;
+  min-height: 3.5rem;
   margin-inline: auto;
   border-bottom: 1px solid var(--steel);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -192,11 +195,12 @@ button {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   align-content: center;
+  align-items: start;
   column-gap: clamp(0.75rem, 2vw, 1.75rem);
   max-width: var(--content);
   width: 100%;
   margin-inline: auto;
-  padding-block: clamp(4rem, 9vw, 8rem);
+  padding-block: clamp(3rem, 5vw, 4rem);
 }
 
 .eyebrow,
@@ -212,26 +216,35 @@ button {
 }
 
 .eyebrow {
-  grid-column: 1 / 5;
-  margin-bottom: clamp(2rem, 5vw, 4rem);
+  margin-bottom: clamp(1.35rem, 2.5vw, 2rem);
   color: var(--teal);
 }
 
-.cover-sheet h1 {
-  grid-column: 1 / -1;
+.cover-main {
+  grid-column: 1 / 8;
+}
+
+.cover-context {
+  grid-column: 8 / -1;
+  padding-top: clamp(2rem, 5vw, 4rem);
+}
+
+.scope-line {
+  max-width: 57ch;
+  margin-bottom: 1.4rem;
+  font-size: clamp(1rem, 1.35vw, 1.15rem);
+  font-weight: 650;
+  line-height: 1.45;
 }
 
 .lede {
-  grid-column: 1 / 7;
-  max-width: 57ch;
-  margin-bottom: 2rem;
-  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  max-width: 46ch;
+  margin-bottom: 1.5rem;
+  font-size: clamp(1rem, 1.35vw, 1.16rem);
   line-height: 1.45;
 }
 
 .operator-register {
-  grid-column: 8 / -1;
-  grid-row: 3 / span 2;
   margin-bottom: 0;
   border-top: 2px solid var(--carbon);
 }
@@ -240,7 +253,7 @@ button {
   display: grid;
   grid-template-columns: minmax(7rem, 0.65fr) 1.35fr;
   gap: 1rem;
-  padding-block: 0.9rem;
+  padding-block: 0.75rem;
   border-bottom: 1px solid var(--steel);
 }
 
@@ -258,14 +271,12 @@ button {
 }
 
 .primary-action {
-  grid-column: 1 / 5;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   width: fit-content;
   max-width: 100%;
-  margin-top: 1rem;
   padding: 0.7rem 0.9rem;
   border-inline-start: 5px solid var(--orange);
   background: var(--carbon);
@@ -284,11 +295,30 @@ button {
   font-size: 1.1rem;
 }
 
+.cover-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+}
+
+.secondary-action {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.73rem;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
 main > section:not(.manifesto) {
   width: 100%;
   max-width: calc(var(--content) + var(--gutter) + var(--gutter));
   margin-inline: auto;
-  padding: clamp(4.75rem, 10vw, 9rem) var(--gutter);
+  padding: clamp(4rem, 7.5vw, 7rem) var(--gutter);
 }
 
 main > section + section:not(.manifesto) {
@@ -325,6 +355,7 @@ main > section + section:not(.manifesto) {
   column-gap: clamp(0.75rem, 2vw, 1.75rem);
   background: var(--carbon);
   color: var(--paper);
+  padding-block: clamp(3rem, 5vw, 4.5rem) !important;
 }
 
 .name-reveal .section-code {
@@ -335,8 +366,9 @@ main > section + section:not(.manifesto) {
 .name-reveal h2 {
   position: relative;
   grid-column: 4 / -1;
-  max-width: 15ch;
-  margin-bottom: 2.5rem;
+  max-width: 18ch;
+  margin-bottom: 1.75rem;
+  font-size: clamp(2.25rem, 4.25vw, 4rem);
 }
 
 .name-reveal h2::after {
@@ -371,7 +403,7 @@ main > section + section:not(.manifesto) {
 
 .pathway-route li {
   position: relative;
-  min-height: 15.5rem;
+  min-height: 20rem;
   padding: 2.6rem clamp(1rem, 2vw, 1.7rem) 2rem;
   border-top: 1px solid var(--carbon);
   border-left: 1px solid var(--steel);
@@ -443,6 +475,21 @@ main > section + section:not(.manifesto) {
 .pathway-route li p:last-child {
   max-width: 36ch;
   margin-bottom: 0;
+}
+
+.pathway-route li p + p {
+  margin-top: 0.8rem;
+}
+
+.pathway-aside {
+  max-width: 62ch;
+  margin: calc(-1 * clamp(1.5rem, 3vw, 2.5rem)) 0 clamp(2rem, 4vw, 3.5rem) auto;
+  padding-top: 0.85rem;
+  border-top: 3px solid var(--orange);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
 }
 
 body[data-active-stage] [data-stage] {
@@ -530,8 +577,8 @@ body[data-active-stage="execution"] [data-stage="execution"] {
 }
 
 .lens-grid article {
-  min-height: 22rem;
-  padding: clamp(2rem, 5vw, 4.5rem);
+  min-height: 18rem;
+  padding: clamp(2rem, 4vw, 3.5rem);
 }
 
 .lens-grid article + article {
@@ -539,7 +586,7 @@ body[data-active-stage="execution"] [data-stage="execution"] {
 }
 
 .lens-grid .lens-code {
-  margin-bottom: clamp(3rem, 6vw, 5.5rem);
+  margin-bottom: clamp(2rem, 4vw, 3.5rem);
   color: var(--teal);
 }
 
@@ -559,6 +606,45 @@ body[data-active-stage="execution"] [data-stage="execution"] {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.83rem;
   letter-spacing: 0.025em;
+}
+
+.method-ledger {
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.75fr) 2fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  padding-block: clamp(2rem, 4vw, 3.5rem);
+  border-bottom: 1px solid var(--carbon);
+}
+
+.method-ledger .section-code {
+  margin: 0;
+  color: var(--teal);
+}
+
+.method-ledger ol {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--carbon);
+  list-style: none;
+  counter-reset: method;
+}
+
+.method-ledger li {
+  display: grid;
+  grid-template-columns: 2.75rem 1fr;
+  gap: 1rem;
+  padding-block: 0.9rem;
+  border-bottom: 1px solid var(--steel);
+  counter-increment: method;
+}
+
+.method-ledger li::before {
+  content: counter(method, decimal-leading-zero) " /";
+  color: var(--orange);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
 }
 
 .table-wrap {
@@ -706,6 +792,11 @@ tbody tr:nth-child(3) th {
   text-transform: uppercase;
 }
 
+.gut-check .closing-beat {
+  margin: clamp(3rem, 7vw, 5.5rem) 0 0 auto;
+  color: var(--carbon);
+}
+
 .gut-check details {
   border-block: 1px solid var(--carbon);
 }
@@ -796,6 +887,25 @@ tbody tr:nth-child(3) th {
   font-weight: 650;
 }
 
+.copy-fallback {
+  display: block;
+  width: min(100%, 48rem);
+  min-height: 12rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--carbon);
+  border-left: 5px solid var(--orange);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--carbon);
+  font: 0.9rem/1.6 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  resize: vertical;
+}
+
+[hidden] {
+  display: none !important;
+}
+
 footer {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -877,16 +987,25 @@ footer a {
   }
 
   .cover-sheet {
-    padding-block: clamp(3.5rem, 14vw, 6rem);
+    padding-block: clamp(2.5rem, 11vw, 3.5rem);
   }
 
   .eyebrow {
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
   }
 
   h1 {
-    max-width: 15ch;
-    font-size: clamp(3rem, 13vw, 5.5rem);
+    max-width: none;
+    font-size: clamp(2.75rem, 11vw, 3.4rem);
+    line-height: 0.94;
+  }
+
+  h2 {
+    font-size: clamp(2.15rem, 10.5vw, 2.75rem);
+  }
+
+  .cover-context {
+    padding-top: 2.25rem;
   }
 
   .lede {
@@ -894,16 +1013,25 @@ footer a {
   }
 
   .operator-register {
-    margin-top: 2.5rem;
+    margin-top: 1.5rem;
   }
 
   .operator-register div {
-    grid-template-columns: 1fr;
-    gap: 0.35rem;
+    grid-template-columns: 7.25rem minmax(0, 1fr);
+    gap: 0.75rem;
   }
 
   .primary-action {
-    margin-top: 2rem;
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .cover-actions {
+    display: block;
+  }
+
+  .secondary-action {
+    margin-top: 0.65rem;
   }
 
   main > section:not(.manifesto) {
@@ -956,6 +1084,10 @@ footer a {
     margin-bottom: 0.8rem;
   }
 
+  .pathway-aside {
+    margin: 0 0 2rem;
+  }
+
   .failure-rows summary {
     display: block;
     padding-right: 2.5rem;
@@ -988,6 +1120,14 @@ footer a {
 
   .lens-grid .lens-code {
     margin-bottom: 2.5rem;
+  }
+
+  .method-ledger {
+    display: block;
+  }
+
+  .method-ledger .section-code {
+    margin-bottom: 1.25rem;
   }
 
   table,

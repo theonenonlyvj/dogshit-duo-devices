@@ -27,13 +27,32 @@ test('ships the complete semantic page contract', () => {
   assert.match(html, /aria-live="polite"/);
 });
 
-test('contains the approved positioning and useful action', () => {
-  assert.match(html, /Meet customers where they are\./);
+test('contains the council-approved positioning and useful actions', () => {
+  assert.match(html, /When a medtech sale stalls, the problem is rarely the funnel\. It&#39;s the pathway\./);
   assert.match(html, /Dogshit Duo Devices/);
-  assert.match(html, /Clinical lens/);
-  assert.match(html, /Engineering lens/);
-  assert.match(html, /Put the pathway on the table/);
+  assert.match(html, /Clinical reality/);
+  assert.match(html, /Commercial system/);
+  assert.match(html, /Find where the pathway breaks/);
+  assert.match(html, /See ways to use the duo/);
   assert.match(html, /Commercial gut-check/);
+});
+
+test('orders recognition and hireable uses before pathway theory', () => {
+  const positions = ['name-reveal', 'failure-register', 'engagements',
+    'pathway', 'operators', 'manifesto', 'gut-check']
+    .map((name) => html.indexOf(`id="${name}"`));
+
+  assert.ok(positions.every((position) => position >= 0));
+  assert.deepEqual(positions, [...positions].sort((a, b) => a - b));
+  assert.match(html, /<details open>/);
+});
+
+test('uses decision signals and routes claims to internal owners', () => {
+  assert.equal((html.match(/<strong>Must decide:<\/strong>/g) ?? []).length, 6);
+  assert.equal((html.match(/<strong>Breaks when:<\/strong>/g) ?? []).length, 6);
+  assert.match(html, /evidence fit, resource impact/i);
+  assert.match(html, /claims-review handoff for the appropriate internal owners/i);
+  assert.match(html, /Bad name\. Better next move\./);
 });
 
 test('uses the approved Field Transfer engagement label', () => {
@@ -68,6 +87,14 @@ test('implements the approved palette and motion contract', () => {
   assert.match(css, /a,\s*button,\s*summary\s*\{[^}]*min-height:\s*44px\s*;/s);
 });
 
+test('encodes the measured cover and safe heading-wrap contracts', () => {
+  assert.match(css, /h1,\s*h2,\s*h3\s*\{[^}]*overflow-wrap:\s*normal\s*;[^}]*word-break:\s*normal\s*;[^}]*hyphens:\s*none\s*;/s);
+  assert.match(css, /\.document-cover\s*\{[^}]*min-height:\s*100svh\s*;/s);
+  assert.match(css, /\.cover-main\s*\{[^}]*grid-column:\s*1\s*\/\s*8\s*;/s);
+  assert.match(css, /\.cover-context\s*\{[^}]*grid-column:\s*8\s*\/\s*-1\s*;/s);
+  assert.match(css, /@media\s*\(max-width:\s*840px\)[\s\S]*?h1\s*\{[^}]*font-size:\s*clamp\(2\.75rem,\s*11vw,\s*3\.4rem\)\s*;/s);
+});
+
 test('keeps small annotation text on contrast-safe approved tokens', () => {
   assert.match(css, /\.lens-grid article:nth-child\(2\) \.lens-code\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
   assert.match(css, /tbody tr:nth-child\(3\) th\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
@@ -96,12 +123,32 @@ test('maps ratios to pathway stages', async () => {
   assert.equal(stageForRatio(0.9), 'execution');
 });
 
+test('times out a clipboard request that never settles', async () => {
+  const { writeClipboardWithTimeout } = await import('../script.js');
+  let written = '';
+  await writeClipboardWithTimeout({
+    async writeText(value) { written = value; },
+  }, 'field questions', 20);
+  assert.equal(written, 'field questions');
+
+  await assert.rejects(writeClipboardWithTimeout({
+    writeText() { return new Promise(() => {}); },
+  }, 'field questions', 5), /timed out/i);
+});
+
 test('keeps enhancement code small and progressive', async () => {
   const script = await readFile(new URL('../script.js', import.meta.url), 'utf8');
   assert.ok(Buffer.byteLength(script) < 10_240);
   assert.match(script, /IntersectionObserver/);
   assert.match(script, /navigator\.clipboard/);
+  assert.match(script, /\.select\(\)/);
+  assert.match(script, /questions are selected/i);
   assert.match(script, /document/);
+});
+
+test('ships a read-only clipboard fallback without hiding the questions', () => {
+  assert.match(html, /class="copy-fallback"[^>]*readonly[^>]*hidden/);
+  assert.match(html, /Copy or select the five questions/);
 });
 
 test('resolves every local href and src target', async () => {
@@ -131,7 +178,7 @@ test('keeps the social card to the exact approved copy and palette', async () =>
   const body = socialSource.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? '';
   const visibleText = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
-  assert.equal(visibleText, 'DOGSHIT DUO DEVICES Clinical truth. Engineering discipline. Commercial motion. Serious operators. Unfortunate name.');
+  assert.equal(visibleText, 'DOGSHIT DUO DEVICES Clinical perspective. Engineering discipline. Commercial motion. Serious operators. Unfortunate name.');
   for (const color of approvedColors.values()) {
     assert.match(socialSource.toLowerCase(), new RegExp(color));
   }

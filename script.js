@@ -5,6 +5,21 @@ export function stageForRatio(ratio) {
   return 'execution';
 }
 
+export async function writeClipboardWithTimeout(clipboard, text, timeoutMs = 700) {
+  let timeoutId;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = globalThis.setTimeout(() => {
+      reject(new Error('Clipboard request timed out'));
+    }, timeoutMs);
+  });
+
+  try {
+    await Promise.race([clipboard.writeText(text), timeout]);
+  } finally {
+    globalThis.clearTimeout(timeoutId);
+  }
+}
+
 const doc = globalThis.document;
 
 if (doc) {
@@ -51,11 +66,13 @@ if (doc) {
 
   const copyButton = doc.querySelector('.copy-gut-check');
   const copyStatus = doc.querySelector('.copy-status');
+  const copyFallback = doc.querySelector('.copy-fallback');
 
-  if (copyButton && copyStatus) {
+  if (copyButton && copyStatus && copyFallback) {
     copyButton.addEventListener('click', async () => {
       const questions = [...doc.querySelectorAll('.gut-check-questions li')]
         .map((question, index) => `${index + 1}. ${question.textContent.trim()}`);
+      const questionText = questions.join('\n');
 
       try {
         const navigator = globalThis.navigator;
@@ -63,11 +80,16 @@ if (doc) {
             typeof navigator.clipboard.writeText !== 'function') {
           throw new Error('Clipboard unavailable');
         }
-        await navigator.clipboard.writeText(questions.join('\n'));
+        await writeClipboardWithTimeout(navigator.clipboard, questionText);
+        copyFallback.hidden = true;
         copyStatus.textContent = 'Commercial gut-check copied.';
       } catch {
+        copyFallback.value = questionText;
+        copyFallback.hidden = false;
+        copyFallback.focus();
+        copyFallback.select();
         copyStatus.textContent =
-          'Copy unavailable — select the checklist below.';
+          'Copy is blocked here. The questions are selected—press Command/Ctrl+C.';
       }
     });
   }
