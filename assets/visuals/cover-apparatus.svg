@@ -1,10 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" fill="none">
-  <g stroke="#93a4aa" stroke-width="2"><path d="M24 48H616M24 192H616"/><path d="M80 24V216M320 24V216M560 24V216" stroke-dasharray="6 8"/></g>
-  <g stroke="#111a1e" stroke-width="5">
-    <path d="M36 134H150V92H238V134H350V86H444V134H604"/>
-    <rect x="112" y="72" width="76" height="96"/><rect x="282" y="66" width="76" height="108"/><rect x="452" y="72" width="76" height="96"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" preserveAspectRatio="none" fill="none">
+  <g stroke="#93a4aa" stroke-width="2">
+    <path d="M8 38H632M8 202H632"/>
+    <path d="M160 22V218M320 22V218M480 22V218" stroke-dasharray="7 9"/>
   </g>
-  <path d="M42 112H598" stroke="#35666b" stroke-width="5"/>
-  <path d="M365 52l30 30-30 30-30-30 30-30Z" stroke="#e05235" stroke-width="6"/>
-  <circle cx="604" cy="134" r="12" fill="#e05235"/>
+  <path d="M20 124H620" stroke="#35666b" stroke-width="6"/>
+  <g data-stage="stall-signal" transform="translate(80 0)">
+    <path d="M-60 146H-32V86H20V146H60" stroke="#111a1e" stroke-width="6"/>
+    <rect x="-32" y="86" width="52" height="80" stroke="#111a1e" stroke-width="5"/>
+    <path d="M-18 108H7M-18 124H7M-18 140H7" stroke="#93a4aa" stroke-width="3"/>
+  </g>
+  <g data-stage="pathway-inspection" transform="translate(240 0)">
+    <path d="M-46 104V70H-12M46 104V70H12M-46 144V178H-12M46 144V178H12" stroke="#111a1e" stroke-width="6"/>
+    <circle cx="0" cy="124" r="30" stroke="#111a1e" stroke-width="5"/>
+    <path d="M22 146L48 172" stroke="#111a1e" stroke-width="6"/>
+  </g>
+  <g data-stage="named-break" transform="translate(400 0)">
+    <path d="M0 70L48 118L0 166L-48 118L0 70Z" stroke="#e05235" stroke-width="7"/>
+    <path d="M3 82L-10 112L9 126L-3 158" stroke="#e05235" stroke-width="6"/>
+  </g>
+  <g data-stage="owner-move" transform="translate(560 0)">
+    <circle cx="-20" cy="124" r="27" stroke="#111a1e" stroke-width="5"/>
+    <path d="M8 124H54M39 108L56 124L39 140" stroke="#e05235" stroke-width="7"/>
+    <circle cx="-20" cy="124" r="7" fill="#35666b"/>
+  </g>
 </svg>

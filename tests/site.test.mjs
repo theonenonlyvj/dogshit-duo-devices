@@ -363,11 +363,29 @@ test('keeps the live cover labels and compact apparatus contract', () => {
     .map((match) => match[1]),
   ['STALL SIGNAL', 'PATHWAY INSPECTION', 'NAMED BREAK', 'OWNER + SMALLEST MOVE']);
   assert.doesNotMatch(coverSource, /aria-hidden/);
-  assert.match(css, /@media\s*\(max-width:\s*360px\)[\s\S]*?\.cover-apparatus img\s*\{[^}]*height:\s*(?:5\.25rem|84px)\s*;/s);
+  assert.match(css, /@media\s*\(max-width:\s*840px\)[\s\S]*?\.cover-apparatus\s*\{[^}]*height:\s*(?:5\.25rem|84px)\s*;/s);
+  assert.match(css, /@media\s*\(max-width:\s*840px\)[\s\S]*?\.cover-apparatus img\s*\{[^}]*height:\s*100%\s*;/s);
   assert.match(css,
     /@media\s*\(min-width:\s*361px\)\s*and\s*\(max-width:\s*389px\)/);
   assert.doesNotMatch(css,
     /@media\s*\(min-width:\s*361px\)\s*and\s*\(max-width:\s*361px\)/);
+});
+
+test('aligns four cover-art stages to the four caption columns', async () => {
+  const source = await readFile(
+    new URL('../assets/visuals/cover-apparatus.svg', import.meta.url), 'utf8');
+  const stages = [...source.matchAll(
+    /<g data-stage="([^"]+)" transform="translate\((\d+) 0\)">/g)]
+    .map((match) => ({ name: match[1], center: Number(match[2]) }));
+
+  assert.match(source, /preserveAspectRatio="none"/,
+    'the intrinsic SVG viewport must span the complete four-column rail');
+  assert.deepEqual(stages, [
+    { name: 'stall-signal', center: 80 },
+    { name: 'pathway-inspection', center: 240 },
+    { name: 'named-break', center: 400 },
+    { name: 'owner-move', center: 560 },
+  ]);
 });
 
 test('keeps small annotation text on contrast-safe approved tokens', () => {

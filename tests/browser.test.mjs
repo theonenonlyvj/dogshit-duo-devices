@@ -99,6 +99,16 @@ for (const viewport of viewports) {
           height: element.getBoundingClientRect().height,
           width: element.getBoundingClientRect().width,
         }));
+      const coverImageElement = document.querySelector('.cover-apparatus img');
+      const coverImageBox = coverImageElement.getBoundingClientRect();
+      const coverImageStyle = getComputedStyle(coverImageElement);
+      const widthScale = coverImageBox.width / coverImageElement.naturalWidth;
+      const heightScale = coverImageBox.height / coverImageElement.naturalHeight;
+      const coverImageContentWidth = coverImageStyle.objectFit === 'contain'
+        ? coverImageElement.naturalWidth * Math.min(widthScale, heightScale)
+        : coverImageStyle.objectFit === 'cover'
+          ? coverImageElement.naturalWidth * Math.max(widthScale, heightScale)
+          : coverImageBox.width;
       return {
         viewportWidth: innerWidth,
         cls: globalThis.__layoutShiftState?.score ?? null,
@@ -108,6 +118,7 @@ for (const viewport of viewports) {
         cover: rect('.document-cover'),
         coverVisual: rect('[data-visual-signature="cover-apparatus"]'),
         coverImage: rect('.cover-apparatus img'),
+        coverImageContentWidth,
         coverLabels: [...document.querySelectorAll('.cover-apparatus figcaption span')]
           .map((element) => ({
             text: element.textContent.trim(),
@@ -222,6 +233,8 @@ for (const viewport of viewports) {
       assert.ok(metrics.register.bottom <= viewport.height);
       assert.ok(metrics.h1Size > metrics.h2Size,
         'the hero must outrank section headings');
+      assert.ok(metrics.coverImageContentWidth >= metrics.coverVisual.width * 0.95,
+        'the cover artwork must span the same four-column rail as its captions');
       assert.notEqual(metrics.routeLineDisplay, 'none');
       assert.equal(metrics.activeIndexLabelOpacity, '0',
         'the active index label must not cover page copy');
@@ -231,10 +244,13 @@ for (const viewport of viewports) {
     } else {
       assert.equal(metrics.routeLineDisplay, 'none');
       assert.ok(metrics.coverVisual.top < viewport.height);
-      assert.ok(metrics.coverImage.height >= 83.5,
-        'the phone apparatus image itself must visibly occupy at least 84px');
+      assert.ok(metrics.coverImage.height >= 38,
+        'the phone apparatus plot must retain a visible drawing band');
       assert.ok(metrics.coverImage.width >= metrics.coverVisual.width * 0.8,
         'the phone apparatus image must occupy most of the content width');
+      assert.ok(metrics.coverImage.bottom <= Math.min(
+        ...metrics.coverLabels.map((label) => label.top)) + 1,
+      'the phone apparatus plot and label rail must not overlap');
       assert.ok(metrics.coverLabels.every((label) =>
         label.top >= metrics.coverVisual.top &&
         label.bottom <= metrics.coverVisual.bottom + 1),
