@@ -128,6 +128,18 @@ test('maps five failure signals to three engagement families', () => {
   assert.equal(familySections.length, 3);
   assert.deepEqual(familySections.map((match) =>
     match[2].match(/<details\b/g)?.length ?? 0), [1, 2, 2]);
+  assert.deepEqual(Object.fromEntries(familySections.map((match) => {
+    const familySource = match[2];
+    const familyName = familySource.match(/<h3\b[^>]*>([^<]+)<\/h3>/)?.[1];
+    const failureNames = [...familySource.matchAll(
+      /<summary>\s*<span>([^<]+)<\/span>/g,
+    )].map((failure) => failure[1]);
+    return [familyName, failureNames];
+  })), {
+    'Decision story': ['Commercial story'],
+    'Stakeholder pathway': ['Leadership', 'Team build'],
+    'Field transfer': ['Sales motion', 'Launch readiness'],
+  });
   for (const [headingId, familySource] of familySections.map(
     (match) => [match[1], match[2]])) {
     assert.match(familySource, new RegExp(`<h3 id="${headingId}"`));
@@ -221,8 +233,14 @@ test('makes every engagement forwardable without invented durations', () => {
     assert.equal((article.match(/class="engagement-primary"/g) ?? []).length, 2);
     assert.equal((article.match(/class="engagement-detail"/g) ?? []).length, 2);
   }
-  assert.match(engagementSource, /The motion cannot transfer to the field/);
-  assert.doesNotMatch(engagementSource, /Motion depends on a hero/);
+  const selectorSource = engagementSource.slice(
+    engagementSource.indexOf('<ul class="engagement-selector"'),
+    engagementSource.indexOf('</ul>', engagementSource.indexOf(
+      '<ul class="engagement-selector"')),
+  );
+  assert.match(selectorSource,
+    /<li><span>Motion depends on a hero<\/span><strong>Field Transfer<\/strong><\/li>/);
+  assert.doesNotMatch(selectorSource, /The motion cannot transfer to the field/);
 });
 
 test('puts scar tissue on the scan and pressure tests in disclosures', () => {
@@ -346,6 +364,10 @@ test('keeps the live cover labels and compact apparatus contract', () => {
   ['STALL SIGNAL', 'PATHWAY INSPECTION', 'NAMED BREAK', 'OWNER + SMALLEST MOVE']);
   assert.doesNotMatch(coverSource, /aria-hidden/);
   assert.match(css, /@media\s*\(max-width:\s*360px\)[\s\S]*?\.cover-apparatus img\s*\{[^}]*height:\s*(?:5\.25rem|84px)\s*;/s);
+  assert.match(css,
+    /@media\s*\(min-width:\s*361px\)\s*and\s*\(max-width:\s*389px\)/);
+  assert.doesNotMatch(css,
+    /@media\s*\(min-width:\s*361px\)\s*and\s*\(max-width:\s*361px\)/);
 });
 
 test('keeps small annotation text on contrast-safe approved tokens', () => {
@@ -559,6 +581,18 @@ test('uses the corrected section codes and a qualified closing route', () => {
     /Conflicting cross-functional answers are a signal of a pathway problem\./);
   assert.match(gutCheck,
     /<a class="gut-check-action" href="#engagements">Match the live break to an engagement<\/a>/);
+});
+
+test('orders the final actions as copy, interpretation, then engagement route', () => {
+  const gutCheck = sectionSource('gut-check');
+  const detailsEnd = gutCheck.indexOf('</details>');
+  const copyControl = gutCheck.indexOf('<button class="copy-gut-check"');
+  const interpretation = gutCheck.indexOf('<p class="gut-check-interpretation">');
+  const engagementRoute = gutCheck.indexOf('<a class="gut-check-action"');
+  assert.ok(detailsEnd >= 0 && detailsEnd < copyControl,
+    'the copy control must follow the complete five-question disclosure');
+  assert.ok(copyControl < interpretation && interpretation < engagementRoute,
+    'the final action sequence must be copy, interpret, then match');
 });
 
 test('resolves recovery links from nested GitHub Pages URLs', async () => {

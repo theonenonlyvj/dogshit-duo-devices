@@ -47,6 +47,9 @@ const viewports = [
   { name: 'small-mobile-340', width: 340, height: 700, maxDocumentHeight: 11400 },
   { name: 'small-mobile-360', width: 360, height: 700, maxDocumentHeight: 11400 },
   { name: 'small-mobile-361', width: 361, height: 700, maxDocumentHeight: 11400 },
+  { name: 'small-mobile-362', width: 362, height: 700, maxDocumentHeight: 11400 },
+  { name: 'small-mobile-375', width: 375, height: 700, maxDocumentHeight: 11400 },
+  { name: 'small-mobile-389', width: 389, height: 700, maxDocumentHeight: 11400 },
   { name: 'mobile', width: 390, height: 844, maxDocumentHeight: 10225 },
   { name: 'large-mobile', width: 430, height: 932, maxDocumentHeight: 9950 },
 ];
@@ -60,8 +63,23 @@ for (const viewport of viewports) {
     });
     page.on('pageerror', (error) => errors.push(error.message));
 
+    await page.addInitScript(() => {
+      const supported = 'PerformanceObserver' in globalThis &&
+        PerformanceObserver.supportedEntryTypes?.includes('layout-shift');
+      globalThis.__layoutShiftState = { score: 0, supported };
+      if (!supported) return;
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (!entry.hadRecentInput) globalThis.__layoutShiftState.score += entry.value;
+        }
+      });
+      observer.observe({ type: 'layout-shift', buffered: true });
+    });
+
     await page.goto(baseURL, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(
+      () => requestAnimationFrame(resolve))));
 
     const metrics = await page.evaluate(() => {
       const rect = (selector) => {
@@ -83,6 +101,8 @@ for (const viewport of viewports) {
         }));
       return {
         viewportWidth: innerWidth,
+        cls: globalThis.__layoutShiftState?.score ?? null,
+        clsObserverSupported: globalThis.__layoutShiftState?.supported ?? false,
         documentWidth: document.documentElement.scrollWidth,
         documentHeight: document.documentElement.scrollHeight,
         cover: rect('.document-cover'),
@@ -156,6 +176,10 @@ for (const viewport of viewports) {
     t.diagnostic(JSON.stringify(metrics));
     assert.ok(metrics.documentWidth <= metrics.viewportWidth + 1,
       `horizontal overflow: ${metrics.documentWidth} > ${metrics.viewportWidth}`);
+    assert.equal(metrics.clsObserverSupported, true,
+      'the browser must support real layout-shift observation');
+    assert.ok(Number.isFinite(metrics.cls) && metrics.cls <= 0.05,
+      `CLS must remain at or below 0.05: ${metrics.cls}`);
     assert.ok(metrics.documentHeight <= viewport.maxDocumentHeight,
       `page exceeded the council-reviewed content-density ceiling: ${metrics.documentHeight}`);
     assert.ok(metrics.primaryAction.top < viewport.height,
@@ -239,7 +263,7 @@ for (const viewport of viewports) {
       assert.ok(metrics.pathway.height <= maxPathwayHeight,
         `mobile pathway should be compressed: ${metrics.pathway.height}`);
 
-      if (viewport.height === 700 && viewport.width <= 361) {
+      if (viewport.height === 700 && viewport.width <= 389) {
         for (const [name, geometry] of Object.entries({
           apparatus: metrics.coverVisual,
           primaryAction: metrics.primaryAction,

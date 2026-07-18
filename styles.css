@@ -2113,7 +2113,11 @@ footer a {
 
 }
 
-@media (min-width: 361px) and (max-width: 361px) {
+@media (min-width: 361px) and (max-width: 389px) {
+  h1 {
+    font-size: 3rem;
+  }
+
   .cover-context {
     padding-top: 0;
   }
