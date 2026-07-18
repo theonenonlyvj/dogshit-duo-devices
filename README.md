@@ -2,7 +2,7 @@
 
 Dogshit Duo Devices is a satirical-but-serious field document for medical-device commercialization work. The name makes the joke immediately; the site applies a clinical lens and an engineering lens to the less funny work of aligning product truth, stakeholder decisions, and field execution.
 
-The project is a dependency-free static site built for GitHub Pages. It uses semantic HTML, a restrained CSS document system, and a small browser-native JavaScript enhancement layer. It includes no analytics, cookies, forms, authentication, backend, or third-party application data.
+The production site is dependency-free and built for GitHub Pages. It uses semantic HTML, a restrained CSS document system, self-hosted OFL fonts, and a small browser-native JavaScript enhancement layer. It includes no analytics, cookies, forms, authentication, backend, or third-party application data. Playwright is a development-only dependency for real-browser regression checks.
 
 ## Public-data boundary
 
@@ -22,6 +22,13 @@ Run the source, privacy, accessibility, and release checks:
 
 ```sh
 npm test
+```
+
+Install the Playwright Chromium binary into the repository-local ignored cache once, then run the responsive real-browser checks:
+
+```sh
+PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers npx playwright install chromium
+npm run test:browser
 ```
 
 ## GitHub Pages publication

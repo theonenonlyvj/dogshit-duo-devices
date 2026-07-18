@@ -23,33 +23,42 @@ export async function writeClipboardWithTimeout(clipboard, text, timeoutMs = 700
 const doc = globalThis.document;
 
 if (doc) {
+  const root = doc.documentElement;
   const Observer = globalThis.IntersectionObserver;
-  const stageSections = [...doc.querySelectorAll('[data-stage]')];
   const revealSections = [...doc.querySelectorAll('.reveal')];
+  const sectionLinks = [...doc.querySelectorAll('.field-index [data-section]')];
+  const sectionTargets = sectionLinks
+    .map((link) => doc.getElementById(link.dataset.section))
+    .filter(Boolean);
+
+  const setActiveSection = (id) => {
+    root.dataset.activeSection = id;
+    for (const link of sectionLinks) {
+      if (link.dataset.section === id) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    }
+  };
 
   if (typeof Observer === 'function') {
-    const visibleStages = new Map();
-    const stageObserver = new Observer((entries) => {
+    const visibleSections = new Map();
+    const sectionObserver = new Observer((entries) => {
       for (const entry of entries) {
-        if (entry.isIntersecting) {
-          visibleStages.set(entry.target, entry.intersectionRatio);
-        } else {
-          visibleStages.delete(entry.target);
-        }
+        if (entry.isIntersecting) visibleSections.set(entry.target, entry.intersectionRatio);
+        else visibleSections.delete(entry.target);
       }
 
-      const active = [...visibleStages].sort((a, b) => b[1] - a[1])[0];
-      if (active) {
-        const stage = active[0].dataset.stage;
-        doc.documentElement.dataset.activeStage = stage;
-        doc.body.dataset.activeStage = stage;
-      }
+      const active = [...visibleSections].sort((a, b) => {
+        if (b[1] !== a[1]) return b[1] - a[1];
+        return Math.abs(a[0].getBoundingClientRect().top) -
+          Math.abs(b[0].getBoundingClientRect().top);
+      })[0];
+      if (active) setActiveSection(active[0].id);
     }, {
-      rootMargin: '-35% 0px -55%',
-      threshold: [0, 0.25, 0.5, 0.75, 1],
+      rootMargin: '-18% 0px -64%',
+      threshold: [0, 0.2, 0.5, 0.8, 1],
     });
 
-    for (const section of stageSections) stageObserver.observe(section);
+    for (const section of sectionTargets) sectionObserver.observe(section);
 
     const revealObserver = new Observer((entries, observer) => {
       for (const entry of entries) {
@@ -57,12 +66,29 @@ if (doc) {
         entry.target.classList.add('is-visible');
         observer.unobserve(entry.target);
       }
-    }, { rootMargin: '0px 0px -10%' });
+    }, { rootMargin: '0px 0px -8%' });
 
     for (const section of revealSections) revealObserver.observe(section);
   } else {
     for (const section of revealSections) section.classList.add('is-visible');
   }
+
+  let progressFrame;
+  const updateProgress = () => {
+    progressFrame = undefined;
+    const scrollRange = root.scrollHeight - globalThis.innerHeight;
+    const progress = scrollRange > 0
+      ? Math.min(1, Math.max(0, globalThis.scrollY / scrollRange))
+      : 1;
+    root.style.setProperty('--page-progress', progress.toFixed(4));
+  };
+  const queueProgress = () => {
+    if (progressFrame) return;
+    progressFrame = globalThis.requestAnimationFrame(updateProgress);
+  };
+  globalThis.addEventListener('scroll', queueProgress, { passive: true });
+  globalThis.addEventListener('resize', queueProgress, { passive: true });
+  updateProgress();
 
   const copyButton = doc.querySelector('.copy-gut-check');
   const copyStatus = doc.querySelector('.copy-status');
@@ -92,5 +118,6 @@ if (doc) {
           'Copy is blocked here. The questions are selected—press Command/Ctrl+C.';
       }
     });
+    copyButton.hidden = false;
   }
 }

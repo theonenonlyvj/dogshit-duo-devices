@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=1200, initial-scale=1">
   <title>Dogshit Duo Devices social card</title>
   <style>
+    @font-face {
+      font-family: "DDD Display";
+      font-style: normal;
+      font-weight: 800;
+      font-display: swap;
+      src: url("./fonts/DDD-Display.woff2") format("woff2");
+    }
+
+    @font-face {
+      font-family: "DDD Text";
+      font-style: normal;
+      font-weight: 200 800;
+      font-display: swap;
+      src: url("./fonts/DDD-Text.woff2") format("woff2");
+    }
+
     :root {
       --paper: #f4f2ec;
       --carbon: #111a1e;
@@ -31,7 +47,7 @@
     body {
       position: relative;
       border-left: 8px solid var(--teal);
-      font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+      font-family: "DDD Text", "Helvetica Neue", Arial, sans-serif;
     }
 
     body::before {
@@ -61,11 +77,11 @@
 
     h1 {
       margin: 0 0 30px;
-      font-family: "Arial Narrow", "Helvetica Neue Condensed", "Franklin Gothic Condensed", Arial, sans-serif;
+      font-family: "DDD Display", "Arial Narrow", Arial, sans-serif;
       font-size: 106px;
       font-stretch: condensed;
       font-weight: 800;
-      letter-spacing: -0.055em;
+      letter-spacing: -0.02em;
       line-height: 0.9;
       white-space: nowrap;
     }
@@ -106,7 +122,7 @@
     <div class="rail" aria-hidden="true"></div>
     <div class="hero">
       <h1>DOGSHIT DUO DEVICES</h1>
-      <p class="positioning">Clinical perspective. Engineering discipline. Commercial motion.</p>
+      <p class="positioning">Clinical reality. Engineering discipline. Commercial system.</p>
     </div>
     <p class="closing">Serious operators. Unfortunate name.</p>
   </main>

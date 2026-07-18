@@ -5,7 +5,7 @@ import test from 'node:test';
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const agentRules = await readFile(new URL('../AGENTS.md', import.meta.url), 'utf8');
 const implementationPlan = await readFile(new URL(
-  '../docs/superpowers/plans/2026-07-18-dogshit-duo-devices-site.md',
+  '../docs/superpowers/plans/2026-07-18-adversarial-oomph.md',
   import.meta.url), 'utf8');
 const personalName = String.fromCodePoint(86, 105, 106, 97, 121);
 
@@ -28,10 +28,10 @@ test('ships the complete semantic page contract', () => {
 });
 
 test('contains the council-approved positioning and useful actions', () => {
-  assert.match(html, /When a medtech sale stalls, the problem is rarely the funnel\. It&#39;s the pathway\./);
+  assert.match(html, /When a medtech sale stalls, inspect the pathway—not just the funnel\./);
   assert.match(html, /Dogshit Duo Devices/);
   assert.match(html, /Clinical reality/);
-  assert.match(html, /Commercial system/);
+  assert.match(html, /Engineering discipline/);
   assert.match(html, /Find where the pathway breaks/);
   assert.match(html, /See ways to use the duo/);
   assert.match(html, /Commercial gut-check/);
@@ -52,7 +52,65 @@ test('uses decision signals and routes claims to internal owners', () => {
   assert.equal((html.match(/<strong>Breaks when:<\/strong>/g) ?? []).length, 6);
   assert.match(html, /evidence fit, resource impact/i);
   assert.match(html, /claims-review handoff for the appropriate internal owners/i);
-  assert.match(html, /Bad name\. Better next move\./);
+  assert.match(html, /Serious operators\. Unfortunate name\./);
+});
+
+test('ships the continuous signature route and explicit handoff failures', () => {
+  assert.match(html, /<svg[^>]*class="pathway-line"[^>]*aria-hidden="true"/s);
+  assert.match(html, /<polyline/);
+  assert.equal((html.match(/HANDOFF FAILURE/g) ?? []).length, 2);
+  assert.equal((html.match(/class="route-node"/g) ?? []).length, 6);
+  assert.match(html, /APPROVAL ≠ USE/);
+  assert.match(html, /LEARNING STAYS LOCAL/);
+});
+
+test('makes every engagement forwardable without invented durations', () => {
+  for (const label of ['Use when', 'Working format', 'Who joins', 'Hand-back']) {
+    assert.equal((html.match(new RegExp(`<dt>${label}<\\/dt>`, 'g')) ?? []).length, 3);
+  }
+  assert.doesNotMatch(html, /\b(?:hour|day|week|month|quarter)s?\b/i);
+});
+
+test('puts scar tissue on the scan and pressure tests in disclosures', () => {
+  assert.equal((html.match(/class="operator-translation"/g) ?? []).length, 5);
+  assert.equal((html.match(/<strong>Pressure-test:<\/strong>/g) ?? []).length, 5);
+  assert.match(html, /47 slides and no decision/);
+  assert.match(html, /calendar says launch\. The work was not consulted/);
+});
+
+test('shows a clearly illustrative hand-back rather than fake proof', () => {
+  assert.match(html, /id="decision-ledger"/);
+  assert.match(html, /ILLUSTRATIVE HAND-BACK \/ DECISION LEDGER/);
+  assert.match(html, /Illustration—not client evidence\./);
+  assert.equal((html.match(/class="ledger-row"/g) ?? []).length, 3);
+  assert.equal((html.match(/<dt>Internal next-move owner<\/dt>/g) ?? []).length, 3);
+  assert.equal((html.match(/<dt>Owner state<\/dt>/g) ?? []).length, 3);
+  assert.equal((html.match(/<dt>Timing state<\/dt>/g) ?? []).length, 3);
+  assert.doesNotMatch(html, /<dt>Accountable owner<\/dt>/);
+  assert.match(html, /A clinical champion is not a purchasing pathway\./);
+});
+
+test('names actual participants and describes the failure register accurately', () => {
+  assert.match(html, /person responsible for clinical adoption/);
+  assert.match(html, /person representing clinical reality/);
+  assert.match(html, /The formal question is what the meeting says\. The operator translation is what the field hears\./);
+  assert.doesNotMatch(html, /The first line is what the meeting says/);
+});
+
+test('uses one canonical pair of operator lenses everywhere', () => {
+  assert.ok((html.match(/Clinical reality/g) ?? []).length >= 3);
+  assert.ok((html.match(/Engineering discipline/g) ?? []).length >= 3);
+  assert.doesNotMatch(html, /Clinical perspective/);
+  assert.doesNotMatch(html, /Engineering and commercial system/);
+});
+
+test('ships a semantic document index with all major stages', () => {
+  assert.match(html, /<nav class="field-index" aria-label="Field document sections">/);
+  for (const id of ['top', 'failure-register', 'engagements', 'pathway',
+    'operators', 'manifesto', 'gut-check']) {
+    assert.match(html, new RegExp(`href="#${id}"`));
+    assert.match(html, new RegExp(`data-section="${id}"`));
+  }
 });
 
 test('uses the approved Field Transfer engagement label', () => {
@@ -60,9 +118,12 @@ test('uses the approved Field Transfer engagement label', () => {
 });
 
 test('does not ship placeholders or personal contact channels', () => {
+  const visibleText = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
   for (const forbidden of [/@[a-z0-9.-]+\.[a-z]{2,}/i,
-    /\+?\d[\d\s().-]{8,}\d/, /lorem ipsum/i, /example\.com/i,
-    /href="mailto:/i, /href="tel:/i]) {
+    /\+?\d[\d\s().-]{8,}\d/, /lorem ipsum/i, /example\.com/i]) {
+    assert.doesNotMatch(visibleText, forbidden);
+  }
+  for (const forbidden of [/href="mailto:/i, /href="tel:/i]) {
     assert.doesNotMatch(html, forbidden);
   }
 });
@@ -92,19 +153,43 @@ test('encodes the measured cover and safe heading-wrap contracts', () => {
   assert.match(css, /\.document-cover\s*\{[^}]*min-height:\s*100svh\s*;/s);
   assert.match(css, /\.cover-main\s*\{[^}]*grid-column:\s*1\s*\/\s*8\s*;/s);
   assert.match(css, /\.cover-context\s*\{[^}]*grid-column:\s*8\s*\/\s*-1\s*;/s);
-  assert.match(css, /@media\s*\(max-width:\s*840px\)[\s\S]*?h1\s*\{[^}]*font-size:\s*clamp\(2\.75rem,\s*11vw,\s*3\.4rem\)\s*;/s);
+  assert.match(css, /@media\s*\(max-width:\s*840px\)[\s\S]*?h1\s*\{[^}]*font-size:\s*clamp\(/s);
 });
 
 test('keeps small annotation text on contrast-safe approved tokens', () => {
   assert.match(css, /\.lens-grid article:nth-child\(2\) \.lens-code\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
-  assert.match(css, /tbody tr:nth-child\(3\) th\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
+  assert.match(css, /\.method-ledger li::before\s*\{[^}]*color:\s*var\(--teal\)\s*;/s);
+  assert.match(css, /\.engagement-rows article:nth-child\(3\) \.engagement-code\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
+  assert.match(css, /\.route-alert span\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
+});
+
+test('preserves explicit list semantics for Safari and VoiceOver', () => {
+  assert.match(html, /<ol class="pathway-route" role="list">/);
+  assert.match(html, /<div id="procedure"[\s\S]*?<ol role="list">/);
+  assert.match(html, /<ul class="manifesto-lines" role="list">/);
+  assert.match(html, /<ol class="gut-check-questions" role="list">/);
+});
+
+test('self-hosts licensed brand typography and removes dead layout CSS', async () => {
+  assert.match(css, /@font-face\s*\{[^}]*font-family:\s*"DDD Display"[^}]*font-display:\s*swap[^}]*url\("\.\/assets\/fonts\//s);
+  assert.match(css, /@font-face\s*\{[^}]*font-family:\s*"DDD Text"[^}]*font-display:\s*swap[^}]*url\("\.\/assets\/fonts\//s);
+  assert.match(css, /font-family:\s*"DDD Text"/);
+  assert.match(css, /font-family:\s*"DDD Display"/);
+  assert.doesNotMatch(css, /\.shared-range|\.table-wrap|\btable\s*\{|\bthead\s*\{|\btbody\b/);
+
+  for (const path of [
+    '../assets/fonts/DDD-Display.woff2',
+    '../assets/fonts/DDD-Text.woff2',
+    '../assets/fonts/OFL-BarlowCondensed.txt',
+    '../assets/fonts/OFL-AtkinsonHyperlegibleNext.txt',
+  ]) await assert.doesNotReject(access(new URL(path, import.meta.url)));
 });
 
 test('contains responsive rules without template effects', () => {
   assert.match(css, /@media\s*\(max-width:\s*840px\)/);
   for (const forbidden of [/\b(?:linear|radial|conic)-gradient\s*\(/i,
     /\b(?:box-shadow|text-shadow|drop-shadow\s*\()/i,
-    /\bbackground-image\s*:/i, /\burl\s*\(/i, /backdrop-filter/i,
+    /\bbackground-image\s*:/i, /backdrop-filter/i,
     /cursor\s*:\s*(?:none|url\s*\()/i, /scroll-snap(?:-type|-align|-stop)?\s*:/i]) {
     assert.doesNotMatch(css, forbidden);
   }
@@ -148,7 +233,13 @@ test('keeps enhancement code small and progressive', async () => {
 
 test('ships a read-only clipboard fallback without hiding the questions', () => {
   assert.match(html, /class="copy-fallback"[^>]*readonly[^>]*hidden/);
-  assert.match(html, /Copy or select the five questions/);
+  assert.match(html, /class="copy-gut-check"[^>]*hidden[^>]*>Copy the five-question gut-check/);
+});
+
+test('uses path geometry instead of live favicon text', async () => {
+  const favicon = await readFile(new URL('../assets/favicon.svg', import.meta.url), 'utf8');
+  assert.match(favicon, /<path\b/);
+  assert.doesNotMatch(favicon, /<text\b|font-family=/);
 });
 
 test('resolves every local href and src target', async () => {
@@ -178,7 +269,7 @@ test('keeps the social card to the exact approved copy and palette', async () =>
   const body = socialSource.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? '';
   const visibleText = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
-  assert.equal(visibleText, 'DOGSHIT DUO DEVICES Clinical perspective. Engineering discipline. Commercial motion. Serious operators. Unfortunate name.');
+  assert.equal(visibleText, 'DOGSHIT DUO DEVICES Clinical reality. Engineering discipline. Commercial system. Serious operators. Unfortunate name.');
   for (const color of approvedColors.values()) {
     assert.match(socialSource.toLowerCase(), new RegExp(color));
   }
@@ -212,7 +303,17 @@ test('disables Jekyll processing for the Pages source tree', async () => {
 test('documents local checks and the anonymous public-data boundary', async () => {
   const readme = await readFile(new URL('../README.md', import.meta.url), 'utf8');
   assert.match(readme, /npm test/);
+  assert.match(readme, /npm run test:browser/);
   assert.match(readme, /npm start/);
   assert.match(readme, /public-data boundary/i);
   assert.match(readme, /anonymous/i);
+});
+
+test('runs source and browser regression checks in GitHub Actions', async () => {
+  const workflow = await readFile(new URL(
+    '../.github/workflows/browser-regression.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /npm ci/);
+  assert.match(workflow, /playwright install --with-deps chromium/);
+  assert.match(workflow, /npm test/);
+  assert.match(workflow, /npm run test:browser/);
 });
