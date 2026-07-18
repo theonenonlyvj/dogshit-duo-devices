@@ -49,21 +49,41 @@ test('does not ship placeholders or personal contact channels', () => {
 });
 
 const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+const approvedColors = new Map([
+  ['--paper', '#f4f2ec'],
+  ['--carbon', '#111a1e'],
+  ['--steel', '#93a4aa'],
+  ['--teal', '#35666b'],
+  ['--orange', '#e05235'],
+  ['--umber', '#3b2a24'],
+]);
 
 test('implements the approved palette and motion contract', () => {
-  for (const value of ['#f4f2ec', '#111a1e', '#93a4aa',
-    '#35666b', '#e05235', '#3b2a24']) {
-    assert.match(css.toLowerCase(), new RegExp(value));
+  for (const [token, value] of approvedColors) {
+    assert.match(css.toLowerCase(), new RegExp(
+      `${token}:\\s*${value}\\s*;`));
   }
   assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
-  assert.match(css, /:focus-visible/);
-  assert.match(css, /min-height:\s*44px/);
+  assert.match(css, /:focus-visible\s*\{[^}]*outline:\s*3px\s+solid\s+var\(--orange\)\s*;/s);
+  assert.match(css, /a,\s*button,\s*summary\s*\{[^}]*min-height:\s*44px\s*;/s);
+});
+
+test('keeps small annotation text on contrast-safe approved tokens', () => {
+  assert.match(css, /\.lens-grid article:nth-child\(2\) \.lens-code\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
+  assert.match(css, /tbody tr:nth-child\(3\) th\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
 });
 
 test('contains responsive rules without template effects', () => {
   assert.match(css, /@media\s*\(max-width:\s*840px\)/);
-  for (const forbidden of [/backdrop-filter/i, /cursor:\s*none/i,
-    /scroll-snap-type/i]) {
+  for (const forbidden of [/\b(?:linear|radial|conic)-gradient\s*\(/i,
+    /\b(?:box-shadow|text-shadow|drop-shadow\s*\()/i,
+    /\bbackground-image\s*:/i, /\burl\s*\(/i, /backdrop-filter/i,
+    /cursor\s*:\s*(?:none|url\s*\()/i, /scroll-snap(?:-type|-align|-stop)?\s*:/i]) {
     assert.doesNotMatch(css, forbidden);
   }
+
+  const literalColors = css.toLowerCase().match(/#[0-9a-f]{3,8}\b/g) ?? [];
+  const allowedValues = new Set(approvedColors.values());
+  assert.deepEqual([...new Set(literalColors.filter(
+    (value) => !allowedValues.has(value)))], []);
 });

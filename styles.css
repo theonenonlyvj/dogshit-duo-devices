@@ -458,7 +458,7 @@ body[data-active-stage="execution"] [data-stage="execution"] {
 }
 
 .failure-register {
-  background: #ebe9e3;
+  background: var(--paper);
 }
 
 .failure-rows {
@@ -517,7 +517,10 @@ body[data-active-stage="execution"] [data-stage="execution"] {
 }
 
 .failure-rows details > p strong {
-  color: #f07a5e;
+  color: var(--paper);
+  text-decoration-color: var(--orange);
+  text-decoration-line: underline;
+  text-underline-offset: 0.2em;
 }
 
 .lens-grid {
@@ -541,7 +544,7 @@ body[data-active-stage="execution"] [data-stage="execution"] {
 }
 
 .lens-grid article:nth-child(2) .lens-code {
-  color: var(--orange);
+  color: var(--umber);
 }
 
 .lens-grid article p:last-child {
@@ -615,7 +618,7 @@ tbody th {
 }
 
 tbody tr:nth-child(3) th {
-  color: var(--orange);
+  color: var(--umber);
 }
 
 .engagement-rows {
@@ -674,7 +677,7 @@ tbody tr:nth-child(3) th {
   align-items: baseline;
   gap: 1rem;
   padding-block: clamp(1.2rem, 3vw, 2rem);
-  border-bottom: 1px solid #485359;
+  border-bottom: 1px solid var(--steel);
   font-family: "Arial Narrow", "Roboto Condensed", "Helvetica Neue Condensed",
     "Franklin Gothic Condensed", Arial, sans-serif;
   font-size: clamp(1.45rem, 3.8vw, 3.5rem);
@@ -800,7 +803,7 @@ footer {
   width: 100%;
   padding: clamp(2.5rem, 5vw, 4rem) var(--gutter);
   border-top: 1px solid var(--carbon);
-  background: #ebe9e3;
+  background: var(--paper);
   font-size: 0.78rem;
   line-height: 1.55;
 }
