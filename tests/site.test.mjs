@@ -176,8 +176,6 @@ test('uses decision signals and routes claims to internal owners', () => {
 });
 
 test('ships three semantic pathway zones and explicit handoff failures', () => {
-  assert.match(html, /<svg[^>]*class="pathway-line"[^>]*aria-hidden="true"/s);
-  assert.match(html, /<polyline/);
   assert.equal((html.match(/HANDOFF FAILURE/g) ?? []).length, 2);
   assert.equal((html.match(/class="route-node"/g) ?? []).length, 6);
   assert.match(html, /APPROVAL ≠ USE/);
@@ -198,10 +196,6 @@ test('ships three semantic pathway zones and explicit handoff failures', () => {
     assert.match(zoneSource, new RegExp(`<h3 id="${headingId}"`));
   }
   assert.doesNotMatch(pathwaySource, /class="pathway-zone-labels"|<ol class="pathway-route"/);
-  assert.doesNotMatch(pathwaySource,
-    /class="cross-zone-gate[^"]*"[^>]*marker-(?:start|mid|end)=/);
-  assert.match(pathwaySource,
-    /class="feedback-route"[^>]*marker-end="url\(#route-arrow\)"/);
   assert.match(html, /ILLUSTRATIVE WORKING MODEL/);
   assert.match(html, /class="feedback-loop"/);
   assert.match(pathwaySource, /<h4>Contracting and access<\/h4>/);
@@ -354,6 +348,36 @@ test('keeps shipped HTML and CSS runtime references local', async () => {
 });
 
 const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+const failurePlateSvg = await readFile(new URL(
+  '../assets/visuals/failure-plate.svg', import.meta.url), 'utf8');
+const methodSvg = await readFile(new URL(
+  '../assets/visuals/method-convergence.svg', import.meta.url), 'utf8');
+
+test('aligns authored diagrams to their live caption rails', () => {
+  assert.match(failurePlateSvg, /viewBox="0 0 640 240"/);
+  assert.match(failurePlateSvg, /preserveAspectRatio="none"/);
+  assert.deepEqual([...failurePlateSvg.matchAll(
+    /data-stage="([^"]+)" transform="translate\((\d+) 0\)"/g,
+  )].map((match) => [match[1], Number(match[2])]), [
+    ['decision-story', 106],
+    ['stakeholder-pathway', 320],
+    ['field-transfer', 534],
+  ]);
+
+  assert.match(methodSvg, /viewBox="0 0 640 240"/);
+  assert.match(methodSvg, /preserveAspectRatio="none"/);
+  assert.deepEqual([...methodSvg.matchAll(
+    /data-stage="([^"]+)" transform="translate\((\d+) 0\)"/g,
+  )].map((match) => [match[1], Number(match[2])]), [
+    ['clinical', 106],
+    ['engineering', 320],
+    ['hand-back', 534],
+  ]);
+
+  const pathwaySource = sectionSource('pathway');
+  assert.doesNotMatch(pathwaySource, /class="pathway-line"/);
+  assert.match(css, /\.pathway-zone-route li::after/);
+});
 const approvedColors = new Map([
   ['--paper', '#f4f2ec'],
   ['--carbon', '#111a1e'],

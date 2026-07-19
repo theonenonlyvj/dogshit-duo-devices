@@ -483,8 +483,15 @@ button {
 }
 
 .fault-family-visual img {
-  max-width: 50rem;
-  margin-inline: auto;
+  height: clamp(8rem, 13vw, 10rem);
+  max-height: none;
+  object-fit: fill;
+}
+
+.method-apparatus img {
+  height: clamp(6rem, 10vw, 8rem);
+  max-height: none;
+  object-fit: fill;
 }
 
 .cover-apparatus figcaption,
@@ -508,6 +515,7 @@ button {
 
 .method-apparatus figcaption {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  font-size: 0.72rem;
 }
 
 .cover-apparatus figcaption span:last-child,
@@ -866,6 +874,7 @@ main > section + section:not(.manifesto) {
 
 .feedback-loop {
   border-top: 2px solid var(--orange);
+  border-inline-start: 2px solid var(--teal);
   color: var(--umber);
 }
 
@@ -897,39 +906,6 @@ main > section + section:not(.manifesto) {
   text-transform: uppercase;
 }
 
-.pathway-field {
-  position: relative;
-}
-
-.pathway-line {
-  display: none;
-}
-
-.pathway-line .zone-spine,
-.pathway-line .cross-zone-gate,
-.pathway-line .feedback-route {
-  fill: none;
-  stroke: var(--carbon);
-  stroke-linecap: square;
-  stroke-linejoin: miter;
-  stroke-width: 1.5;
-  vector-effect: non-scaling-stroke;
-}
-
-.pathway-line .cross-zone-gate-risk {
-  stroke: var(--orange);
-  stroke-width: 3;
-}
-
-.pathway-line .feedback-route {
-  stroke: var(--teal);
-  stroke-dasharray: 8 7;
-}
-
-.pathway-line marker path {
-  fill: var(--carbon);
-}
-
 .pathway-zone-route {
   gap: 0;
   margin: 0;
@@ -942,6 +918,10 @@ main > section + section:not(.manifesto) {
   min-height: 0;
   padding: 1rem 0 1.2rem 3rem;
   border-top: 1px solid var(--steel);
+}
+
+.pathway-zone-route li::after {
+  content: none;
 }
 
 .pathway-zone-route li:last-child {
@@ -1460,10 +1440,6 @@ footer a {
     margin-bottom: 1.5rem;
   }
 
-  .fault-family-visual img {
-    max-width: 42rem;
-  }
-
   .fault-family-key,
   .engagement-selector {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1525,17 +1501,6 @@ footer a {
     padding-inline: 1rem;
   }
 
-  .pathway-line {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    display: block;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    pointer-events: none;
-  }
-
   .pathway-zone-route {
     grid-template-rows: repeat(2, minmax(14.5rem, auto));
     gap: 1rem 0;
@@ -1544,8 +1509,21 @@ footer a {
 
   .pathway-zone-route li {
     min-height: 14.5rem;
-    padding: 3.5rem clamp(1rem, 2vw, 1.6rem) 0.9rem;
+    padding: 3.5rem clamp(1rem, 2vw, 1.6rem) 0.9rem 4.5rem;
     border-bottom: 0;
+  }
+
+  .pathway-zone-route li::after {
+    content: "";
+    position: absolute;
+    top: 3.43rem;
+    bottom: -3.25rem;
+    left: 2.02rem;
+    border-left: 2px solid var(--teal);
+  }
+
+  .pathway-zone-route li:last-child::after {
+    content: none;
   }
 
   .route-node {
@@ -1579,6 +1557,10 @@ footer a {
     margin: 0;
   }
 
+  .feedback-loop {
+    padding-inline-start: 4.5rem;
+  }
+
   .method-ledger {
     display: grid;
     grid-template-columns: minmax(11rem, 0.72fr) 2fr;
@@ -1596,12 +1578,6 @@ footer a {
 
   .method-ledger {
     padding-block: 1.35rem;
-  }
-
-  .method-apparatus img {
-    max-height: 7rem;
-    object-fit: contain;
-    object-position: left center;
   }
 
   .method-ledger li {
@@ -1760,10 +1736,6 @@ footer a {
 
   [data-visual-signature][data-mobile-dominant] {
     min-height: 84px;
-  }
-
-  .pathway-line {
-    display: none;
   }
 
   .document-cover {
@@ -2044,12 +2016,6 @@ footer a {
     margin-block: 0.65rem;
   }
 
-  .method-apparatus img {
-    max-height: 5.5rem;
-    object-fit: contain;
-    object-position: left center;
-  }
-
   .method-ledger li {
     padding-block: 0.52rem;
   }
@@ -2137,6 +2103,16 @@ footer a {
     justify-self: auto;
     margin-top: 0.6rem;
     text-align: left;
+  }
+}
+
+@media (max-width: 479px) {
+  .fault-family-visual img {
+    height: 7rem;
+  }
+
+  .method-apparatus img {
+    height: 6rem;
   }
 }
 
@@ -2259,25 +2235,18 @@ footer a {
 }
 
 @media (forced-colors: active) {
-  body::before,
-  .pathway-line .zone-spine,
-  .pathway-line .cross-zone-gate {
+  body::before {
     background: CanvasText;
-    stroke: CanvasText;
   }
 
-  body::after,
-  .pathway-line .cross-zone-gate-risk,
-  .pathway-line .feedback-route {
+  body::after {
     background: LinkText;
-    stroke: LinkText;
   }
 }
 
 @media print {
   .field-index,
   .chapter-directory,
-  .pathway-line,
   .copy-gut-check,
   .copy-status {
     display: none !important;

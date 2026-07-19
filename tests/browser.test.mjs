@@ -66,6 +66,113 @@ const viewports = [
   { name: '1920x1080', width: 1920, height: 1080, maxDocumentHeight: 7800 },
 ];
 
+test('aligns diagram artwork, captions, and local pathway lanes', async () => {
+  for (const width of [1024, 1280, 1440, 1920]) {
+    const page = await browser.newPage({ viewport: { width, height: 1080 } });
+    await page.goto(baseURL, { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+
+    const geometry = await page.evaluate(() => {
+      const box = (element) => {
+        const rect = element.getBoundingClientRect();
+        return { left: rect.left, right: rect.right, top: rect.top,
+          bottom: rect.bottom, width: rect.width, height: rect.height };
+      };
+      const imageGeometry = (selector) => {
+        const element = document.querySelector(selector);
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        const widthScale = rect.width / element.naturalWidth;
+        const heightScale = rect.height / element.naturalHeight;
+        let contentWidth = rect.width;
+        if (style.objectFit === 'contain') {
+          contentWidth = element.naturalWidth * Math.min(widthScale, heightScale);
+        } else if (style.objectFit === 'cover') {
+          contentWidth = element.naturalWidth * Math.max(widthScale, heightScale);
+        } else if (style.objectFit === 'none') {
+          contentWidth = element.naturalWidth;
+        }
+        return { ...box(element), naturalWidth: element.naturalWidth,
+          naturalHeight: element.naturalHeight, objectFit: style.objectFit,
+          maxHeight: style.maxHeight, contentWidth };
+      };
+      const railGeometry = (selector) => [...document.querySelectorAll(selector)]
+        .map((element) => ({ ...box(element),
+          fontSize: Number.parseFloat(getComputedStyle(element).fontSize) }));
+      const pathwayCards = [...document.querySelectorAll('.pathway-zone-route > li')]
+        .map((card) => {
+          const cardRect = card.getBoundingClientRect();
+          const node = card.querySelector('.route-node');
+          const nodeRect = node.getBoundingClientRect();
+          const copy = [...card.querySelectorAll(':scope > .route-label, :scope > h4, ' +
+            ':scope > p:not(.route-alert)')]
+            .filter((element) => element.getClientRects().length > 0)
+            .map((element) => element.getBoundingClientRect());
+          const pseudo = getComputedStyle(card, '::after');
+          const connectorLeft = Number.parseFloat(pseudo.left);
+          const connectorWidth = Number.parseFloat(pseudo.borderLeftWidth) || 0;
+          return {
+            node: box(node),
+            minCopyLeft: Math.min(...copy.map((rect) => rect.left)),
+            connectorContent: pseudo.content,
+            connectorCenterX: Number.isFinite(connectorLeft)
+              ? cardRect.left + connectorLeft + connectorWidth / 2
+              : null,
+          };
+        });
+      return {
+        failure: imageGeometry('.fault-family-visual img'),
+        failureKeys: railGeometry('.fault-family-key > li'),
+        method: imageGeometry('.method-apparatus img'),
+        methodCaptions: railGeometry('.method-apparatus figcaption > span'),
+        pathwayCards,
+      };
+    });
+
+    for (const [name, image, rail, minHeight, maxHeight] of [
+      ['failure', geometry.failure, geometry.failureKeys, 128, 160],
+      ['method', geometry.method, geometry.methodCaptions, 96, 128],
+    ]) {
+      assert.ok(image.naturalWidth > 0 && image.naturalHeight > 0,
+        `${width}px ${name} must expose intrinsic image dimensions`);
+      assert.equal(image.objectFit, 'fill', `${width}px ${name} must fill its plot band`);
+      assert.equal(image.maxHeight, 'none', `${width}px ${name} must not be capped`);
+      assert.ok(image.contentWidth >= image.width * 0.98,
+        `${width}px ${name} artwork must occupy its plot width`);
+      assert.ok(image.height >= minHeight && image.height <= maxHeight,
+        `${width}px ${name} plot height is outside ${minHeight}-${maxHeight}px`);
+      assert.equal(rail.length, 3, `${width}px ${name} must retain three live captions`);
+      const artworkCenters = [106, 320, 534]
+        .map((stageX) => image.left + image.width * stageX / 640);
+      const railCenters = rail.map((item) => item.left + item.width / 2);
+      assert.ok(railCenters.every((center, index) =>
+        Math.abs(center - artworkCenters[index]) <= 2),
+      `${width}px ${name} artwork stations must align with caption centers`);
+    }
+
+    assert.ok(geometry.methodCaptions.every((caption) => caption.fontSize >= 11.5),
+      `${width}px method captions must remain at least 11.5px`);
+    assert.equal(geometry.pathwayCards.length, 6);
+    for (const [index, card] of geometry.pathwayCards.entries()) {
+      assert.ok(card.node.right <= card.minCopyLeft - 12,
+        `${width}px pathway node ${index + 1} must clear live copy`);
+      if (index % 2 === 0) {
+        assert.notEqual(card.connectorContent, 'none',
+          `${width}px pathway connector ${index + 1} must be drawn locally`);
+        assert.ok(Math.abs(card.connectorCenterX -
+          (card.node.left + card.node.width / 2)) <= 2,
+        `${width}px pathway connector ${index + 1} must align with its node`);
+        assert.ok(card.connectorCenterX + 1 <= card.minCopyLeft - 12,
+          `${width}px pathway connector ${index + 1} must clear live copy`);
+      } else {
+        assert.equal(card.connectorContent, 'none',
+          `${width}px final zone card must end its local connector`);
+      }
+    }
+    await page.close();
+  }
+});
+
 for (const viewport of viewports) {
   test(`renders the ${viewport.name} contract`, async (t) => {
     const page = await browser.newPage({ viewport });
@@ -175,8 +282,9 @@ for (const viewport of viewports) {
         sections: Object.fromEntries(['name-reveal', 'failure-register',
           'engagements', 'pathway', 'operators', 'manifesto', 'gut-check']
           .map((id) => [id, rect(`#${id}`)?.height])),
-        routeLineDisplay: getComputedStyle(
-          document.querySelector('.pathway-line')).display,
+        routeLineDisplay: document.querySelector('.pathway-line')
+          ? getComputedStyle(document.querySelector('.pathway-line')).display
+          : 'missing',
         routeTops: [...document.querySelectorAll('.pathway-zone-route > li')]
           .map((item) => item.getBoundingClientRect().top),
         routeLefts: [...document.querySelectorAll('.pathway-zone-route > li')]
@@ -295,7 +403,7 @@ for (const viewport of viewports) {
         'the hero must outrank section headings');
       assert.ok(metrics.coverImageContentWidth >= metrics.coverVisual.width * 0.95,
         'the cover artwork must span the same four-column rail as its captions');
-      assert.notEqual(metrics.routeLineDisplay, 'none');
+      assert.equal(metrics.routeLineDisplay, 'missing');
       assert.equal(metrics.activeIndexLabelOpacity, '0',
         'the active index label must not cover page copy');
       assert.equal(metrics.zoneLefts.length, 3);
@@ -311,7 +419,7 @@ for (const viewport of viewports) {
         gutCheckDisplay: 'block',
       });
     } else {
-      assert.equal(metrics.routeLineDisplay, 'none');
+      assert.equal(metrics.routeLineDisplay, 'missing');
       assert.ok(metrics.coverVisual.top < viewport.height);
       assert.ok(metrics.coverImage.height >= 38,
         'the phone apparatus plot must retain a visible drawing band');
