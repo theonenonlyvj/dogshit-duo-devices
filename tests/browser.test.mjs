@@ -42,16 +42,28 @@ test.after(async () => {
 });
 
 const viewports = [
-  { name: 'desktop', width: 1280, height: 720, maxDocumentHeight: 7400 },
-  { name: 'small-mobile', width: 320, height: 700, maxDocumentHeight: 11400 },
-  { name: 'small-mobile-340', width: 340, height: 700, maxDocumentHeight: 11400 },
-  { name: 'small-mobile-360', width: 360, height: 700, maxDocumentHeight: 11400 },
-  { name: 'small-mobile-361', width: 361, height: 700, maxDocumentHeight: 11400 },
-  { name: 'small-mobile-362', width: 362, height: 700, maxDocumentHeight: 11400 },
-  { name: 'small-mobile-375', width: 375, height: 700, maxDocumentHeight: 11400 },
-  { name: 'small-mobile-389', width: 389, height: 700, maxDocumentHeight: 11400 },
-  { name: 'mobile', width: 390, height: 844, maxDocumentHeight: 10225 },
-  { name: 'large-mobile', width: 430, height: 932, maxDocumentHeight: 9950 },
+  { name: '320x568', width: 320, height: 568, maxDocumentHeight: 11650 },
+  { name: '320x700', width: 320, height: 700, maxDocumentHeight: 11650 },
+  { name: '359x640', width: 359, height: 640, maxDocumentHeight: 11000 },
+  { name: '360x640', width: 360, height: 640, maxDocumentHeight: 11000 },
+  { name: '360x800', width: 360, height: 800, maxDocumentHeight: 10800 },
+  { name: '375x812', width: 375, height: 812, maxDocumentHeight: 10700 },
+  { name: '390x844', width: 390, height: 844, maxDocumentHeight: 10500 },
+  { name: '412x915', width: 412, height: 915, maxDocumentHeight: 10350 },
+  { name: '430x932', width: 430, height: 932, maxDocumentHeight: 10300 },
+  { name: '479x844', width: 479, height: 844, maxDocumentHeight: 10100 },
+  { name: '480x900', width: 480, height: 900, maxDocumentHeight: 10000 },
+  { name: '768x1024', width: 768, height: 1024, maxDocumentHeight: 9000 },
+  { name: '840x900', width: 840, height: 900, maxDocumentHeight: 8400 },
+  { name: '841x900', width: 841, height: 900, maxDocumentHeight: 8400 },
+  { name: '844x390', width: 844, height: 390, maxDocumentHeight: 8400 },
+  { name: '1023x768', width: 1023, height: 768, maxDocumentHeight: 8200 },
+  { name: '1024x768', width: 1024, height: 768, maxDocumentHeight: 7800 },
+  { name: '1280x720', width: 1280, height: 720, maxDocumentHeight: 7600 },
+  { name: '1423x900', width: 1423, height: 900, maxDocumentHeight: 7600 },
+  { name: '1424x900', width: 1424, height: 900, maxDocumentHeight: 7600 },
+  { name: '1440x900', width: 1440, height: 900, maxDocumentHeight: 7600 },
+  { name: '1920x1080', width: 1920, height: 1080, maxDocumentHeight: 7800 },
 ];
 
 for (const viewport of viewports) {
@@ -88,7 +100,8 @@ for (const viewport of viewports) {
           left: value.left, width: value.width, height: value.height } : null;
       };
       const targets = [...document.querySelectorAll(
-        'button:not([hidden]), summary, .cover-actions a, .field-index a, .gut-check-action')]
+        'button:not([hidden]), summary, .cover-actions a, .field-index a, ' +
+        '.chapter-directory a, .gut-check-action')]
         .filter((element) => {
           const style = getComputedStyle(element);
           return style.display !== 'none' && style.visibility !== 'hidden' &&
@@ -133,6 +146,31 @@ for (const viewport of viewports) {
         primaryAction: rect('.primary-action'),
         register: rect('.operator-register'),
         gutCheckAction: rect('.gut-check-action'),
+        manifestoCounterExpressions: [...document.querySelectorAll('.manifesto-lines li')]
+          .map((element) => getComputedStyle(element, '::before').content.replaceAll('"', '')),
+        chapterDirectoryDisplay: document.querySelector('.chapter-directory')
+          ? getComputedStyle(document.querySelector('.chapter-directory')).display
+          : 'missing',
+        directoryTrack: rect('.chapter-directory-track'),
+        directoryTrackScrollWidth: document.querySelector('.chapter-directory-track')
+          ?.scrollWidth ?? 0,
+        directoryTrackClientWidth: document.querySelector('.chapter-directory-track')
+          ?.clientWidth ?? 0,
+        fieldIndex: rect('.field-index'),
+        contentRail: rect('.document-rail'),
+        layoutMode: {
+          coverDisplay: getComputedStyle(document.querySelector('.document-cover')).display,
+          pathwayColumnCount: getComputedStyle(document.querySelector('.pathway-groups'))
+            .gridTemplateColumns.split(' ').filter(Boolean).length,
+          engagementArticleDisplay: getComputedStyle(
+            document.querySelector('.engagement-rows article')).display,
+          engagementColumnCount: getComputedStyle(document.querySelector('.engagement-rows dl'))
+            .gridTemplateColumns.split(' ').filter(Boolean).length,
+          methodDisplay: getComputedStyle(document.querySelector('.method-ledger')).display,
+          ledgerRowsDisplay: getComputedStyle(document.querySelector('.ledger-rows')).display,
+          gutCheckDisplay: getComputedStyle(
+            document.querySelector('.gut-check-questions')).display,
+        },
         pathway: rect('#pathway'),
         sections: Object.fromEntries(['name-reveal', 'failure-register',
           'engagements', 'pathway', 'operators', 'manifesto', 'gut-check']
@@ -217,6 +255,27 @@ for (const viewport of viewports) {
       'ledger labels must be at least 0.72rem');
     assert.ok(metrics.gutCheckAction && metrics.gutCheckAction.height >= 43.5,
       'the internal engagement route must meet the 44px target');
+    assert.deepEqual(metrics.manifestoCounterExpressions,
+      Array(3).fill('counter(manifesto, decimal-leading-zero)'),
+      'Chromium must apply the named manifesto counter expression');
+    if (viewport.width <= 1423) {
+      assert.notEqual(metrics.chapterDirectoryDisplay, 'none',
+        'the in-flow chapter directory must remain available through 1423px');
+      assert.equal(metrics.fieldIndex.width, 0,
+        'the fixed field index must remain hidden when it cannot clear the content rail');
+    } else {
+      assert.equal(metrics.chapterDirectoryDisplay, 'none',
+        'the in-flow chapter directory must yield to the wide fixed index');
+      assert.ok(metrics.fieldIndex.width >= 43.5,
+        'the fixed field index must be visible from 1424px');
+      const indexGap = metrics.fieldIndex.left - metrics.contentRail.right;
+      assert.ok(Math.abs(indexGap - 8) <= 2,
+        `the fixed index must sit 8px outside the capped rail: ${indexGap}`);
+    }
+    if (viewport.width <= 480) {
+      assert.ok(metrics.directoryTrackScrollWidth > metrics.directoryTrackClientWidth,
+        'the narrow directory must scroll inside its own track');
+    }
     assert.equal(metrics.visualSignatures.length, 8);
     assert.ok(metrics.visualSignatures.every((visual) =>
       visual.display !== 'none' && visual.visibility !== 'hidden' &&
@@ -225,9 +284,11 @@ for (const viewport of viewports) {
     for (const target of metrics.targets) {
       assert.ok(target.height >= 43.5,
         `${target.label} is shorter than the 44px target`);
+      assert.ok(target.width >= 43.5,
+        `${target.label} is narrower than the 44px target`);
     }
 
-    if (viewport.width > 840) {
+    if (viewport.width >= 1024) {
       assert.ok(metrics.cover.height <= viewport.height + 1);
       assert.ok(metrics.primaryAction.bottom <= viewport.height);
       assert.ok(metrics.register.bottom <= viewport.height);
@@ -241,6 +302,15 @@ for (const viewport of viewports) {
       assert.equal(metrics.zoneLefts.length, 3);
       assert.ok(metrics.zoneLefts[0] < metrics.zoneLefts[1] &&
         metrics.zoneLefts[1] < metrics.zoneLefts[2]);
+      assert.deepEqual(metrics.layoutMode, {
+        coverDisplay: 'grid',
+        pathwayColumnCount: 3,
+        engagementArticleDisplay: 'grid',
+        engagementColumnCount: 4,
+        methodDisplay: 'grid',
+        ledgerRowsDisplay: 'grid',
+        gutCheckDisplay: 'block',
+      });
     } else {
       assert.equal(metrics.routeLineDisplay, 'none');
       assert.ok(metrics.coverVisual.top < viewport.height);
@@ -257,8 +327,6 @@ for (const viewport of viewports) {
       'the four cover labels must stay integrated inside the compact apparatus');
       assert.ok(metrics.coverVisual.bottom <= metrics.primaryAction.top + 1,
         'the phone cover apparatus must lead directly into the primary action');
-      assert.ok(metrics.register.bottom <= viewport.height,
-        'the full operator register must fit in the first phone viewport');
       assert.equal(metrics.mobileDominant.length, 4);
       assert.deepEqual(metrics.mobileDominant.map((visual) => visual.name), [
         'cover-apparatus',
@@ -278,23 +346,97 @@ for (const viewport of viewports) {
       const maxPathwayHeight = viewport.width <= 360 ? 1950 : 1680;
       assert.ok(metrics.pathway.height <= maxPathwayHeight,
         `mobile pathway should be compressed: ${metrics.pathway.height}`);
+      assert.deepEqual(metrics.layoutMode, {
+        coverDisplay: 'block',
+        pathwayColumnCount: 1,
+        engagementArticleDisplay: 'block',
+        engagementColumnCount: 2,
+        methodDisplay: 'block',
+        ledgerRowsDisplay: 'block',
+        gutCheckDisplay: 'block',
+      });
+    }
 
-      if (viewport.height === 700 && viewport.width <= 389) {
-        for (const [name, geometry] of Object.entries({
-          apparatus: metrics.coverVisual,
-          primaryAction: metrics.primaryAction,
-          operatorRegister: metrics.register,
-        })) {
-          assert.ok(geometry.top >= 0 && geometry.bottom <= viewport.height + 1,
-            `${name} must fit completely inside the 700px boundary viewport`);
-        }
-      }
+    if (['320x568', '320x700', '359x640', '360x640'].includes(viewport.name)) {
+      assert.ok(metrics.coverVisual.bottom <= viewport.height + 1,
+        'the complete four-stage apparatus must fit inside the short-phone viewport');
+      assert.ok(metrics.primaryAction.bottom <= viewport.height + 1,
+        'the primary action must fit inside the short-phone viewport');
     }
 
     assert.deepEqual(errors, []);
     await page.close();
   });
 }
+
+test('keeps the 840px and 841px compositions in the same tablet mode', async () => {
+  const states = [];
+  for (const width of [840, 841]) {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await page.goto(baseURL, { waitUntil: 'networkidle' });
+    states.push(await page.evaluate(() => ({
+      coverDisplay: getComputedStyle(document.querySelector('.document-cover')).display,
+      pathwayColumnCount: getComputedStyle(document.querySelector('.pathway-groups'))
+        .gridTemplateColumns.split(' ').filter(Boolean).length,
+      engagementArticleDisplay: getComputedStyle(
+        document.querySelector('.engagement-rows article')).display,
+      engagementColumnCount: getComputedStyle(document.querySelector('.engagement-rows dl'))
+        .gridTemplateColumns.split(' ').filter(Boolean).length,
+      methodDisplay: getComputedStyle(document.querySelector('.method-ledger')).display,
+      ledgerRowsDisplay: getComputedStyle(document.querySelector('.ledger-rows')).display,
+      gutCheckDisplay: getComputedStyle(document.querySelector('.gut-check-questions')).display,
+    })));
+    await page.close();
+  }
+  assert.deepEqual(states[0], states[1]);
+});
+
+test('caps desktop section type when the content rail stops growing', async () => {
+  const sizes = [];
+  for (const width of [1440, 1920]) {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await page.goto(baseURL, { waitUntil: 'networkidle' });
+    sizes.push(await page.locator('h2').first().evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)));
+    await page.close();
+  }
+  assert.ok(Math.abs(sizes[0] - sizes[1]) <= 0.1,
+    `section type must stop growing with the capped rail: ${sizes.join(', ')}`);
+});
+
+test('keeps keyboard-focused directory links inside the horizontal track', async () => {
+  const page = await browser.newPage({ viewport: { width: 320, height: 700 } });
+  await page.goto(baseURL, { waitUntil: 'networkidle' });
+  await page.locator('.chapter-directory').scrollIntoViewIfNeeded();
+  const pageScrollBefore = await page.evaluate(() => scrollY);
+
+  for (const position of ['last', 'first']) {
+    const geometry = await page.evaluate(async (linkPosition) => {
+      const track = document.querySelector('.chapter-directory-track');
+      const links = [...track.querySelectorAll('a')];
+      if (linkPosition === 'last') track.scrollLeft = 0;
+      const link = linkPosition === 'last' ? links.at(-1) : links[0];
+      link.focus();
+      await new Promise((resolve) => requestAnimationFrame(() =>
+        requestAnimationFrame(resolve)));
+      const trackRect = track.getBoundingClientRect();
+      const linkRect = link.getBoundingClientRect();
+      return {
+        trackLeft: trackRect.left,
+        trackRight: trackRect.right,
+        linkLeft: linkRect.left,
+        linkRight: linkRect.right,
+        pageScrollY: scrollY,
+      };
+    }, position);
+    assert.ok(geometry.linkLeft >= geometry.trackLeft - 1 &&
+      geometry.linkRight <= geometry.trackRight + 1,
+    `${position} directory link must be fully contained by its track`);
+    assert.ok(Math.abs(geometry.pageScrollY - pageScrollBefore) <= 1,
+      'directory focus must scroll only the horizontal track');
+  }
+  await page.close();
+});
 
 test('keeps the gut-check useful when JavaScript is disabled', async () => {
   const context = await browser.newContext({

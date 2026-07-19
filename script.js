@@ -26,18 +26,37 @@ if (doc) {
   const root = doc.documentElement;
   const Observer = globalThis.IntersectionObserver;
   const revealSections = [...doc.querySelectorAll('.reveal')];
-  const sectionLinks = [...doc.querySelectorAll('.field-index [data-section]')];
-  const sectionTargets = sectionLinks
+  const sectionLinks = [...doc.querySelectorAll(
+    '.field-index [data-section], .chapter-directory [data-section]',
+  )];
+  const sectionTargets = [...new Set(sectionLinks
     .map((link) => doc.getElementById(link.dataset.section))
-    .filter(Boolean);
+    .filter(Boolean))];
+  const directoryTrack = doc.querySelector('.chapter-directory-track');
+
+  const revealDirectoryLink = (link) => {
+    if (!directoryTrack || !link || !directoryTrack.contains(link)) return;
+    const trackRect = directoryTrack.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    if (linkRect.left < trackRect.left) {
+      directoryTrack.scrollBy({ left: linkRect.left - trackRect.left });
+    } else if (linkRect.right > trackRect.right) {
+      directoryTrack.scrollBy({ left: linkRect.right - trackRect.right });
+    }
+  };
 
   const setActiveSection = (id) => {
     root.dataset.activeSection = id;
     for (const link of sectionLinks) {
-      if (link.dataset.section === id) link.setAttribute('aria-current', 'true');
-      else link.removeAttribute('aria-current');
+      const active = link.dataset.section === id;
+      link.toggleAttribute('aria-current', active);
+      if (active) revealDirectoryLink(link);
     }
   };
+
+  directoryTrack?.addEventListener('focusin', (event) => {
+    revealDirectoryLink(event.target.closest('[data-section]'));
+  });
 
   if (typeof Observer === 'function') {
     const visibleSections = new Map();

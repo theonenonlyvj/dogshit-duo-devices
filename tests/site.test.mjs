@@ -14,6 +14,12 @@ const agentRules = await readFile(new URL('../AGENTS.md', import.meta.url), 'utf
 const implementationPlan = await readFile(new URL(
   '../docs/superpowers/plans/2026-07-18-adversarial-oomph.md',
   import.meta.url), 'utf8');
+const responsiveDesign = await readFile(new URL(
+  '../docs/superpowers/specs/2026-07-19-responsive-precision-design.md',
+  import.meta.url), 'utf8');
+const responsivePlan = await readFile(new URL(
+  '../docs/superpowers/plans/2026-07-19-responsive-precision.md',
+  import.meta.url), 'utf8');
 const personalName = String.fromCodePoint(86, 105, 106, 97, 121);
 
 function sectionSource(id) {
@@ -57,7 +63,7 @@ function assertLocalRuntimeReferences(source, label = 'source') {
 }
 
 test('keeps repository rules and plans anonymous', () => {
-  for (const source of [agentRules, implementationPlan]) {
+  for (const source of [agentRules, implementationPlan, responsiveDesign, responsivePlan]) {
     assert.ok(!source.toLowerCase().includes(personalName.toLowerCase()));
   }
 });
@@ -73,6 +79,13 @@ test('contains no em dash characters in tracked text files', async () => {
 
   for (const file of trackedFiles) {
     const source = await readFile(join(projectRoot, file), 'utf8');
+    if (source.includes(forbiddenCharacter)) offenders.push(file);
+  }
+
+  for (const [file, source] of [
+    ['docs/superpowers/specs/2026-07-19-responsive-precision-design.md', responsiveDesign],
+    ['docs/superpowers/plans/2026-07-19-responsive-precision.md', responsivePlan],
+  ]) {
     if (source.includes(forbiddenCharacter)) offenders.push(file);
   }
 
@@ -291,6 +304,18 @@ test('ships a semantic document index with all major stages', () => {
   }
 });
 
+test('ships a non-fixed mobile chapter navigation', () => {
+  const directory = html.match(
+    /<nav class="chapter-directory" aria-label="Field document directory">([\s\S]*?)<\/nav>/,
+  )?.[1] ?? '';
+  const fixedIndex = html.match(
+    /<nav class="field-index" aria-label="Field document sections">([\s\S]*?)<\/nav>/,
+  )?.[1] ?? '';
+  const targets = (source) => [...source.matchAll(/href="#([^"]+)"/g)]
+    .map((match) => match[1]);
+  assert.deepEqual(targets(directory), targets(fixedIndex));
+});
+
 test('uses the approved Field Transfer engagement label', () => {
   assert.match(html, /<h3>Field Transfer<\/h3>/);
 });
@@ -353,7 +378,7 @@ test('encodes the measured cover and safe heading-wrap contracts', () => {
   assert.match(css, /\.document-cover\s*\{[^}]*min-height:\s*100svh\s*;/s);
   assert.match(css, /\.cover-main\s*\{[^}]*grid-column:\s*1\s*\/\s*8\s*;/s);
   assert.match(css, /\.cover-context\s*\{[^}]*grid-column:\s*8\s*\/\s*-1\s*;/s);
-  assert.match(css, /@media\s*\(max-width:\s*840px\)[\s\S]*?h1\s*\{[^}]*font-size:\s*clamp\(/s);
+  assert.match(css, /@media\s*\(max-width:\s*1023px\)[\s\S]*?h1\s*\{[^}]*font-size:\s*clamp\(/s);
 });
 
 test('keeps the live cover labels and compact apparatus contract', () => {
@@ -363,12 +388,11 @@ test('keeps the live cover labels and compact apparatus contract', () => {
     .map((match) => match[1]),
   ['STALL SIGNAL', 'PATHWAY INSPECTION', 'NAMED BREAK', 'OWNER + SMALLEST MOVE']);
   assert.doesNotMatch(coverSource, /aria-hidden/);
-  assert.match(css, /@media\s*\(max-width:\s*840px\)[\s\S]*?\.cover-apparatus\s*\{[^}]*height:\s*(?:5\.25rem|84px)\s*;/s);
-  assert.match(css, /@media\s*\(max-width:\s*840px\)[\s\S]*?\.cover-apparatus img\s*\{[^}]*height:\s*100%\s*;/s);
-  assert.match(css,
-    /@media\s*\(min-width:\s*361px\)\s*and\s*\(max-width:\s*389px\)/);
+  assert.match(css, /@media\s*\(max-width:\s*1023px\)[\s\S]*?\.cover-apparatus\s*\{[^}]*height:\s*(?:5\.25rem|84px)\s*;/s);
+  assert.match(css, /@media\s*\(max-width:\s*1023px\)[\s\S]*?\.cover-apparatus img\s*\{[^}]*height:\s*100%\s*;/s);
+  assert.match(css, /@media\s*\(max-width:\s*359px\)/);
   assert.doesNotMatch(css,
-    /@media\s*\(min-width:\s*361px\)\s*and\s*\(max-width:\s*361px\)/);
+    /@media\s*\(min-width:\s*361px\)\s*and\s*\(max-width:\s*389px\)/);
 });
 
 test('aligns four cover-art stages to the four caption columns', async () => {
@@ -397,10 +421,17 @@ test('keeps small annotation text on contrast-safe approved tokens', () => {
 
 test('keeps ledger and engagement labels readable and fit fields hierarchical', () => {
   assert.match(css, /\.engagement-rows dt,\s*\.decision-ledger dt\s*\{[^}]*font-size:\s*0\.72rem\s*;/s);
-  assert.match(css, /@media\s*\(min-width:\s*841px\)[\s\S]*?\.engagement-rows dt\s*\{[^}]*font-size:\s*0\.72rem\s*;/s);
-  assert.match(css, /@media\s*\(max-width:\s*840px\)[\s\S]*?\.ledger-row dt\s*\{[^}]*font-size:\s*0\.72rem\s*;/s);
+  assert.match(css, /@media\s*\(min-width:\s*1024px\)[\s\S]*?\.engagement-rows dt\s*\{[^}]*font-size:\s*0\.72rem\s*;/s);
+  assert.match(css, /@media\s*\(max-width:\s*1023px\)[\s\S]*?\.ledger-row dt\s*\{[^}]*font-size:\s*0\.72rem\s*;/s);
   assert.match(css, /\.engagement-primary\s*\{[^}]*border-top:\s*2px solid var\(--carbon\)\s*;/s);
   assert.match(css, /\.engagement-detail\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
+});
+
+test('uses explicit counters and neutral definition margins', () => {
+  assert.match(css, /\.manifesto-lines\s*\{[^}]*counter-reset:\s*manifesto/s);
+  assert.match(css, /\.manifesto-lines li\s*\{[^}]*counter-increment:\s*manifesto/s);
+  assert.match(css, /content:\s*counter\(manifesto, decimal-leading-zero\)/);
+  assert.match(css, /\.engagement-rows dd\s*\{[^}]*margin:\s*0/s);
 });
 
 test('preserves explicit list semantics for Safari and VoiceOver', () => {
@@ -426,7 +457,10 @@ test('self-hosts licensed brand typography and removes dead layout CSS', async (
 });
 
 test('contains responsive rules without template effects', () => {
-  assert.match(css, /@media\s*\(max-width:\s*840px\)/);
+  assert.match(css, /@media\s*\(max-width:\s*1023px\)/);
+  assert.match(css, /@media\s*\(min-width:\s*1024px\)/);
+  assert.doesNotMatch(css, /@media\s*\(max-width:\s*840px\)/);
+  assert.doesNotMatch(css, /@media\s*\(min-width:\s*841px\)/);
   for (const forbidden of [/\b(?:linear|radial|conic)-gradient\s*\(/i,
     /\b(?:box-shadow|text-shadow|drop-shadow\s*\()/i,
     /\bbackground-image\s*:/i, /backdrop-filter/i,
@@ -447,13 +481,13 @@ test('ships phone-first apparatus styles for every visual chapter', () => {
     '.preflight-mark']) {
     assert.match(css, new RegExp(`\\${selector}\\b`));
   }
-  assert.match(css, /@media\s*\(min-width:\s*841px\)/);
-  assert.match(css, /@media\s*\(max-width:\s*840px\)/);
+  assert.match(css, /@media\s*\(min-width:\s*1024px\)/);
+  assert.match(css, /@media\s*\(max-width:\s*1023px\)/);
 });
 
 test('keeps the canonical phone ledger hierarchy primary-first', () => {
   const phoneStyles = css.match(
-    /@media\s*\(max-width:\s*840px\)\s*\{([\s\S]*?)@media\s*\(max-width:\s*360px\)/,
+    /@media\s*\(max-width:\s*1023px\)\s*\{([\s\S]*?)@media\s*\(max-width:\s*359px\)/,
   )?.[1] ?? '';
 
   assert.ok(phoneStyles);
