@@ -339,6 +339,11 @@ for (const viewport of viewports) {
         heroLedgerDisplay: document.querySelector('.hero-ledger-anatomy')
           ? getComputedStyle(document.querySelector('.hero-ledger-anatomy')).display
           : 'missing',
+        heroLedgerSafetyLabelSize: Number.parseFloat(getComputedStyle(
+          document.querySelector('.hero-ledger-anatomy > p')).fontSize),
+        heroLedgerFieldLabelSizes: [...document.querySelectorAll(
+          '.hero-ledger-anatomy span')]
+          .map((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
         gutCheckAction: rect('.gut-check-action'),
         copyGutCheck: rect('.copy-gut-check:not([hidden])'),
         preflightMarkers: [...document.querySelectorAll('.preflight-mark span')]
@@ -519,10 +524,17 @@ for (const viewport of viewports) {
         metrics.heroLedger.top >= metrics.cover.top - 1 &&
         metrics.heroLedger.bottom <= metrics.cover.bottom + 1,
       'the illustrative ledger must remain inside the initial cover');
+      assert.ok(metrics.heroLedgerFieldLabelSizes.length > 0 &&
+        metrics.heroLedgerFieldLabelSizes.every((size) => size >= 11.5),
+      'visible hero-ledger field labels must remain at least 11.5px');
+      assert.ok(metrics.heroLedgerSafetyLabelSize >= 11.5,
+        'the visible hero-ledger safety label must remain at least 11.5px');
     } else {
       assert.equal(metrics.heroLedgerDisplay, 'none',
         'the illustrative ledger must stay hidden below its width or height threshold');
     }
+    assert.ok(metrics.coverCaptionSizes.every((size) => size >= 11.5),
+      'cover apparatus captions must remain at least 11.5px across the complete matrix');
     assert.deepEqual(metrics.manifestoNumbers, ['01', '02', '03'],
       'manifesto numbers must be exact visible DOM text');
     if (viewport.width <= 1423) {
@@ -627,11 +639,6 @@ for (const viewport of viewports) {
         ledgerRowsDisplay: 'block',
         gutCheckDisplay: 'block',
       });
-    }
-
-    if (viewport.width <= 480) {
-      assert.ok(metrics.coverCaptionSizes.every((size) => size >= 11.5),
-        'cover apparatus captions must remain at least 11.5px through the 480px boundary');
     }
 
     if (viewport.width <= 479) {
