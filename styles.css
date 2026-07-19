@@ -395,6 +395,52 @@ button {
   line-height: 1.42;
 }
 
+.hero-ledger-anatomy {
+  display: none;
+  margin-top: 1.35rem;
+  border-block: 2px solid var(--carbon);
+}
+
+.hero-ledger-anatomy > p {
+  margin: 0;
+  padding-block: 0.55rem;
+  color: var(--teal);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+}
+
+.hero-ledger-anatomy ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hero-ledger-anatomy li {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.8fr) 1.2fr;
+  gap: 0.85rem;
+  padding-block: 0.46rem;
+  border-top: 1px solid var(--steel);
+  line-height: 1.22;
+}
+
+.hero-ledger-anatomy span {
+  color: var(--teal);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hero-ledger-anatomy strong {
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+
 .operator-register {
   margin-bottom: 0;
   border-top: 2px solid var(--carbon);
@@ -1253,11 +1299,12 @@ main > section + section:not(.manifesto) {
 
 .preflight-mark span:last-child {
   border-right: 0;
-  background: var(--orange);
-  color: var(--carbon);
+  background: transparent;
+  color: var(--teal);
 }
 
 .gut-check-questions {
+  display: block;
   margin: 0;
   padding: 0 0 1.3rem;
   list-style: none;
@@ -1720,6 +1767,12 @@ footer a {
 
   .chapter-directory {
     display: none;
+  }
+}
+
+@media (min-width: 1440px) and (min-height: 800px) {
+  .hero-ledger-anatomy {
+    display: block;
   }
 }
 

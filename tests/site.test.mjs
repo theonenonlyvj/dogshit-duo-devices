@@ -269,6 +269,28 @@ test('shows a clearly illustrative hand-back rather than fake proof', () => {
   assert.match(html, /A clinical champion is not a purchasing pathway\./);
 });
 
+test('ships a claim-safe illustrative ledger anatomy inside the cover', () => {
+  const coverSource = html.slice(
+    html.indexOf('<header id="top"'),
+    html.indexOf('</header>', html.indexOf('<header id="top"')),
+  );
+  const ledgerSource = coverSource.match(
+    /<aside class="hero-ledger-anatomy" aria-label="Illustrative decision-ledger anatomy">([\s\S]*?)<\/aside>/,
+  )?.[1] ?? '';
+
+  assert.match(ledgerSource, /ILLUSTRATIVE HAND-BACK \/ DECISION LEDGER ANATOMY/);
+  assert.deepEqual([...ledgerSource.matchAll(
+    /<li><span>([^<]+)<\/span><strong>([^<]+)<\/strong><\/li>/g,
+  )].map((match) => [match[1], match[2]]), [
+    ['Decision', 'What changes now?'],
+    ['Owner', 'Who carries the move?'],
+    ['Evidence', 'What makes it defensible?'],
+    ['Smallest next move', 'What happens next?'],
+  ]);
+  assert.doesNotMatch(ledgerSource,
+    /<a\b|\bhref=|\b(?:client|customer|outcome|result|improved|increased|decreased)\b|%/i);
+});
+
 test('makes accountability gaps explicit in the ledger', () => {
   assert.equal((html.match(/class="ledger-row ledger-primary"/g) ?? []).length, 1);
   assert.equal((html.match(/class="ledger-row ledger-secondary"/g) ?? []).length, 2);
@@ -501,6 +523,12 @@ test('contains responsive rules without template effects', () => {
   const allowedValues = new Set(approvedColors.values());
   assert.deepEqual([...new Set(literalColors.filter(
     (value) => !allowedValues.has(value)))], []);
+});
+
+test('keeps preflight markers neutral and gut-check rows linear', () => {
+  assert.match(css,
+    /\.preflight-mark span:last-child\s*\{[^}]*background:\s*transparent\s*;[^}]*color:\s*var\(--teal\)\s*;/s);
+  assert.match(css, /\.gut-check-questions\s*\{[^}]*display:\s*block\s*;/s);
 });
 
 test('ships phone-first apparatus styles for every visual chapter', () => {

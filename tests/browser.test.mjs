@@ -335,8 +335,22 @@ for (const viewport of viewports) {
           .map((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
         primaryAction: rect('.primary-action'),
         register: rect('.operator-register'),
+        heroLedger: rect('.hero-ledger-anatomy'),
+        heroLedgerDisplay: document.querySelector('.hero-ledger-anatomy')
+          ? getComputedStyle(document.querySelector('.hero-ledger-anatomy')).display
+          : 'missing',
         gutCheckAction: rect('.gut-check-action'),
         copyGutCheck: rect('.copy-gut-check:not([hidden])'),
+        preflightMarkers: [...document.querySelectorAll('.preflight-mark span')]
+          .map((element) => ({
+            backgroundColor: getComputedStyle(element).backgroundColor,
+            color: getComputedStyle(element).color,
+          })),
+        gutCheckRows: [...document.querySelectorAll('.gut-check-questions > li')]
+          .map((element) => {
+            const value = element.getBoundingClientRect();
+            return { top: value.top, left: value.left, right: value.right };
+          }),
         manifestoNumbers: [...document.querySelectorAll('.manifesto-number')]
           .map((element) => element.textContent.trim()),
         chapterDirectoryDisplay: document.querySelector('.chapter-directory')
@@ -481,6 +495,34 @@ for (const viewport of viewports) {
       'ledger labels must be at least 0.72rem');
     assert.ok(metrics.gutCheckAction && metrics.gutCheckAction.height >= 43.5,
       'the internal engagement route must meet the 44px target');
+    assert.equal(metrics.preflightMarkers.length, 5,
+      'the preflight strip must retain all five neutral markers');
+    assert.ok(metrics.preflightMarkers.every((marker) =>
+      marker.backgroundColor === 'rgba(0, 0, 0, 0)'),
+    'all preflight markers must use a neutral transparent background');
+    assert.equal(metrics.gutCheckRows.length, 5,
+      'the gut-check must retain five question rows');
+    assert.ok(metrics.gutCheckRows.every((row, index, rows) =>
+      index === 0 || row.top > rows[index - 1].top),
+    'the five gut-check questions must progress in one vertical sequence');
+    assert.ok(metrics.gutCheckRows.every((row) =>
+      Math.abs(row.left - metrics.gutCheckRows[0].left) <= 2 &&
+      Math.abs(row.right - metrics.gutCheckRows[0].right) <= 2),
+    'the five gut-check questions must align to one pair of rails');
+    const heroLedgerShouldShow = viewport.width >= 1440 && viewport.height >= 800;
+    if (heroLedgerShouldShow) {
+      assert.notEqual(metrics.heroLedgerDisplay, 'none',
+        'the illustrative ledger must balance the tall wide cover');
+      assert.ok(metrics.heroLedger &&
+        metrics.heroLedger.left >= metrics.cover.left - 1 &&
+        metrics.heroLedger.right <= metrics.cover.right + 1 &&
+        metrics.heroLedger.top >= metrics.cover.top - 1 &&
+        metrics.heroLedger.bottom <= metrics.cover.bottom + 1,
+      'the illustrative ledger must remain inside the initial cover');
+    } else {
+      assert.equal(metrics.heroLedgerDisplay, 'none',
+        'the illustrative ledger must stay hidden below its width or height threshold');
+    }
     assert.deepEqual(metrics.manifestoNumbers, ['01', '02', '03'],
       'manifesto numbers must be exact visible DOM text');
     if (viewport.width <= 1423) {
@@ -633,6 +675,45 @@ for (const viewport of viewports) {
     await page.close();
   });
 }
+
+test('enforces both hero-ledger width and height thresholds', async () => {
+  for (const viewport of [
+    { width: 1439, height: 900, visible: false },
+    { width: 1440, height: 799, visible: false },
+    { width: 1440, height: 800, visible: true },
+    { width: 1920, height: 799, visible: false },
+    { width: 1920, height: 1080, visible: true },
+  ]) {
+    const page = await browser.newPage({ viewport });
+    await page.goto(baseURL, { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+    const state = await page.evaluate(() => {
+      const ledger = document.querySelector('.hero-ledger-anatomy');
+      const cover = document.querySelector('.document-cover');
+      if (!ledger) return { display: 'missing', ledger: null, cover: null };
+      const box = (element) => {
+        const rect = element.getBoundingClientRect();
+        return { top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left };
+      };
+      return { display: getComputedStyle(ledger).display,
+        ledger: box(ledger), cover: box(cover) };
+    });
+
+    if (viewport.visible) {
+      assert.notEqual(state.display, 'none',
+        `${viewport.width}x${viewport.height} must show the illustrative ledger`);
+      assert.ok(state.ledger.left >= state.cover.left - 1 &&
+        state.ledger.right <= state.cover.right + 1 &&
+        state.ledger.top >= state.cover.top - 1 &&
+        state.ledger.bottom <= state.cover.bottom + 1,
+      `${viewport.width}x${viewport.height} ledger must stay inside the cover`);
+    } else {
+      assert.equal(state.display, 'none',
+        `${viewport.width}x${viewport.height} must hide the illustrative ledger`);
+    }
+    await page.close();
+  }
+});
 
 test('keeps the 840px and 841px compositions in the same tablet mode', async () => {
   const states = [];
