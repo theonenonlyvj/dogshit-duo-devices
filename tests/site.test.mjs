@@ -114,6 +114,17 @@ test('contains the council-approved positioning and useful actions', () => {
   assert.match(html, /Commercial gut-check/);
 });
 
+test('keeps outward previews abbreviated until the on-page name reveal', async () => {
+  const head = html.match(/<head>([\s\S]*?)<\/head>/i)?.[1] ?? '';
+  const socialSource = await readFile(new URL('../assets/og.html', import.meta.url), 'utf8');
+
+  assert.match(head, /<title>DDD \/ Commercialization Practice<\/title>/);
+  assert.match(head,
+    /<meta property="og:title" content="DDD \/ Commercialization Practice">/);
+  assert.doesNotMatch(head, /Dogshit Duo Devices/i);
+  assert.doesNotMatch(socialSource, /Dogshit Duo Devices/i);
+});
+
 test('orders the page as a buyer belief journey', () => {
   const positions = ['failure-register', 'pathway', 'engagements', 'operators',
     'name-reveal', 'manifesto', 'gut-check']
@@ -662,7 +673,7 @@ test('keeps the social card to the exact approved copy and palette', async () =>
   const body = socialSource.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? '';
   const visibleText = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
-  assert.equal(visibleText, 'DOGSHIT DUO DEVICES INSPECT THE PATHWAY. NOT JUST THE FUNNEL. Serious operators. Unfortunate name.');
+  assert.equal(visibleText, 'DDD / COMMERCIALIZATION PRACTICE INSPECT THE PATHWAY. NOT JUST THE FUNNEL. Serious operators. Unfortunate name.');
   for (const color of approvedColors.values()) {
     assert.match(socialSource.toLowerCase(), new RegExp(color));
   }
@@ -690,6 +701,19 @@ test('uses the corrected section codes and a qualified closing route', () => {
     /Conflicting cross-functional answers are a signal of a pathway problem\./);
   assert.match(gutCheck,
     /<a class="gut-check-action" href="#engagements">Match the live break to an engagement<\/a>/);
+});
+
+test('adds the exact public-safe reply instruction beside the final action', () => {
+  const gutCheck = sectionSource('gut-check');
+  const finalAction = gutCheck.indexOf('<a class="gut-check-action"');
+  const replyInstruction = gutCheck.indexOf(
+    '<p class="gut-check-share-instruction">If someone sent you this, reply with the live break and the engagement that fits.</p>');
+  const copyStatus = gutCheck.indexOf('<p class="copy-status"');
+
+  assert.ok(finalAction >= 0 && finalAction < replyInstruction,
+    'the reply instruction must immediately follow the final action');
+  assert.ok(replyInstruction < copyStatus,
+    'the reply instruction must remain inside the final action group');
 });
 
 test('orders the final actions as copy, interpretation, then engagement route', () => {

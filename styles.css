@@ -1356,6 +1356,18 @@ main > section + section:not(.manifesto) {
   text-transform: uppercase;
 }
 
+.gut-check-share-instruction {
+  width: min(100%, 48rem);
+  margin: 0.75rem 0 0;
+  padding-left: 1rem;
+  border-left: 1px solid var(--steel);
+  color: var(--umber);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
 .copy-gut-check {
   align-items: center;
   margin-top: 1.25rem;

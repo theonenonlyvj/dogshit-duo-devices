@@ -412,6 +412,32 @@ for (const viewport of viewports) {
           .map((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
         gutCheckAction: rect('.gut-check-action'),
         copyGutCheck: rect('.copy-gut-check:not([hidden])'),
+        gutCheckShareInstruction: (() => {
+          const element = document.querySelector('.gut-check-share-instruction');
+          if (!element) return null;
+          const style = getComputedStyle(element);
+          const bounds = element.getBoundingClientRect();
+          const sectionBounds = element.closest('.gut-check').getBoundingClientRect();
+          return {
+            text: element.textContent.trim().replace(/\s+/g, ' '),
+            top: bounds.top,
+            right: bounds.right,
+            bottom: bounds.bottom,
+            left: bounds.left,
+            fontSize: Number.parseFloat(style.fontSize),
+            display: style.display,
+            visibility: style.visibility,
+            opacity: Number.parseFloat(style.opacity),
+            textFits: element.scrollWidth <= element.clientWidth + 1 &&
+              element.scrollHeight <= element.clientHeight + 1,
+            section: {
+              top: sectionBounds.top,
+              right: sectionBounds.right,
+              bottom: sectionBounds.bottom,
+              left: sectionBounds.left,
+            },
+          };
+        })(),
         preflightMarkers: [...document.querySelectorAll('.preflight-mark span')]
           .map((element) => ({
             backgroundColor: getComputedStyle(element).backgroundColor,
@@ -566,6 +592,27 @@ for (const viewport of viewports) {
       'ledger labels must be at least 0.72rem');
     assert.ok(metrics.gutCheckAction && metrics.gutCheckAction.height >= 43.5,
       'the internal engagement route must meet the 44px target');
+    assert.ok(metrics.gutCheckShareInstruction,
+      'the final action must include the public-safe reply instruction');
+    assert.equal(metrics.gutCheckShareInstruction.text,
+      'If someone sent you this, reply with the live break and the engagement that fits.');
+    assert.ok(metrics.gutCheckShareInstruction.fontSize >= 11.5,
+      'the public-safe reply instruction must remain at least 11.5px');
+    assert.notEqual(metrics.gutCheckShareInstruction.display, 'none');
+    assert.notEqual(metrics.gutCheckShareInstruction.visibility, 'hidden');
+    assert.ok(metrics.gutCheckShareInstruction.opacity > 0 &&
+      metrics.gutCheckShareInstruction.textFits,
+    'the public-safe reply instruction must remain visibly readable');
+    assert.ok(
+      metrics.gutCheckShareInstruction.left >=
+        metrics.gutCheckShareInstruction.section.left - 1 &&
+      metrics.gutCheckShareInstruction.right <=
+        metrics.gutCheckShareInstruction.section.right + 1 &&
+      metrics.gutCheckShareInstruction.top >=
+        metrics.gutCheckShareInstruction.section.top - 1 &&
+      metrics.gutCheckShareInstruction.bottom <=
+        metrics.gutCheckShareInstruction.section.bottom + 1,
+    'the public-safe reply instruction must stay contained inside the gut-check');
     assert.equal(metrics.preflightMarkers.length, 5,
       'the preflight strip must retain all five neutral markers');
     assert.ok(metrics.preflightMarkers.every((marker) =>
