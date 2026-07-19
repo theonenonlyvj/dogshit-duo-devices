@@ -49,7 +49,8 @@ if (doc) {
     root.dataset.activeSection = id;
     for (const link of sectionLinks) {
       const active = link.dataset.section === id;
-      link.toggleAttribute('aria-current', active);
+      if (active) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
       if (active) revealDirectoryLink(link);
     }
   };

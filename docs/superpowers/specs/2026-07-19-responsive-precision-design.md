@@ -123,3 +123,11 @@ Work proceeds in four increments. After each increment, a visual council reviews
 2. Diagram geometry.
 3. Compact-phone density and orientation.
 4. Desktop composition and final device matrix.
+
+### Task 1 council amendment
+
+The first council gate found that generated CSS counters could not provide exact,
+browser-verifiable manifesto output. Each manifesto item therefore authors its
+`01`, `02`, or `03` label in a visible `.manifesto-number` span beside a separate
+copy span. Source and browser tests verify those exact text values, and no
+manifesto counter rules remain in the stylesheet.

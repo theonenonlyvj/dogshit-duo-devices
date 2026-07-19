@@ -427,10 +427,15 @@ test('keeps ledger and engagement labels readable and fit fields hierarchical', 
   assert.match(css, /\.engagement-detail\s*\{[^}]*color:\s*var\(--umber\)\s*;/s);
 });
 
-test('uses explicit counters and neutral definition margins', () => {
-  assert.match(css, /\.manifesto-lines\s*\{[^}]*counter-reset:\s*manifesto/s);
-  assert.match(css, /\.manifesto-lines li\s*\{[^}]*counter-increment:\s*manifesto/s);
-  assert.match(css, /content:\s*counter\(manifesto, decimal-leading-zero\)/);
+test('authors exact manifesto numbers and neutral definition margins', () => {
+  const manifesto = sectionSource('manifesto');
+  const numbers = [...manifesto.matchAll(
+    /<span class="manifesto-number">(\d{2})<\/span>/g,
+  )].map((match) => match[1]);
+  assert.deepEqual(numbers, ['01', '02', '03']);
+  assert.equal((manifesto.match(/class="manifesto-copy"/g) ?? []).length, 3);
+  assert.doesNotMatch(css, /counter-(?:reset|increment):\s*manifesto/);
+  assert.doesNotMatch(css, /counter\(manifesto, decimal-leading-zero\)/);
   assert.match(css, /\.engagement-rows dd\s*\{[^}]*margin:\s*0/s);
 });
 

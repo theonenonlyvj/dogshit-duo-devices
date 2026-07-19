@@ -146,8 +146,8 @@ for (const viewport of viewports) {
         primaryAction: rect('.primary-action'),
         register: rect('.operator-register'),
         gutCheckAction: rect('.gut-check-action'),
-        manifestoCounterExpressions: [...document.querySelectorAll('.manifesto-lines li')]
-          .map((element) => getComputedStyle(element, '::before').content.replaceAll('"', '')),
+        manifestoNumbers: [...document.querySelectorAll('.manifesto-number')]
+          .map((element) => element.textContent.trim()),
         chapterDirectoryDisplay: document.querySelector('.chapter-directory')
           ? getComputedStyle(document.querySelector('.chapter-directory')).display
           : 'missing',
@@ -255,9 +255,8 @@ for (const viewport of viewports) {
       'ledger labels must be at least 0.72rem');
     assert.ok(metrics.gutCheckAction && metrics.gutCheckAction.height >= 43.5,
       'the internal engagement route must meet the 44px target');
-    assert.deepEqual(metrics.manifestoCounterExpressions,
-      Array(3).fill('counter(manifesto, decimal-leading-zero)'),
-      'Chromium must apply the named manifesto counter expression');
+    assert.deepEqual(metrics.manifestoNumbers, ['01', '02', '03'],
+      'manifesto numbers must be exact visible DOM text');
     if (viewport.width <= 1423) {
       assert.notEqual(metrics.chapterDirectoryDisplay, 'none',
         'the in-flow chapter directory must remain available through 1423px');
@@ -389,6 +388,89 @@ test('keeps the 840px and 841px compositions in the same tablet mode', async () 
     await page.close();
   }
   assert.deepEqual(states[0], states[1]);
+});
+
+test('keeps Failure Register summary fields in separate tablet columns', async () => {
+  const viewports = [
+    { width: 768, height: 1024 },
+    { width: 840, height: 900 },
+    { width: 841, height: 900 },
+    { width: 1023, height: 768 },
+  ];
+
+  for (const viewport of viewports) {
+    const page = await browser.newPage({ viewport });
+    await page.goto(baseURL, { waitUntil: 'networkidle' });
+    const rows = await page.locator('.failure-rows summary').evaluateAll((summaries) =>
+      summaries.map((summary) => {
+        const summaryRect = summary.getBoundingClientRect();
+        const spans = [...summary.querySelectorAll(':scope > span')]
+          .filter((span) => {
+            const style = getComputedStyle(span);
+            return style.display !== 'none' && style.visibility !== 'hidden' &&
+              span.getClientRects().length > 0;
+          })
+          .map((span) => {
+            const rect = span.getBoundingClientRect();
+            return { left: rect.left, right: rect.right, text: span.textContent.trim() };
+          })
+          .sort((a, b) => a.left - b.left);
+        return {
+          summary: { left: summaryRect.left, right: summaryRect.right },
+          spans,
+        };
+      }));
+
+    for (const [rowIndex, row] of rows.entries()) {
+      assert.equal(row.spans.length, 3,
+        `${viewport.width}px row ${rowIndex + 1} must expose three summary fields`);
+      for (const span of row.spans) {
+        assert.ok(span.left >= row.summary.left - 1 && span.right <= row.summary.right + 1,
+          `${viewport.width}px ${span.text} must stay inside its summary`);
+      }
+      for (let index = 1; index < row.spans.length; index += 1) {
+        assert.ok(row.spans[index - 1].right <= row.spans[index].left + 1,
+          `${viewport.width}px summary fields must not overlap: ` +
+          `${row.spans[index - 1].text} / ${row.spans[index].text}`);
+      }
+    }
+    await page.close();
+  }
+});
+
+test('marks both navigation treatments with the exact active section value', async () => {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  await page.goto(baseURL, { waitUntil: 'networkidle' });
+  await page.locator('#failure-register').evaluate((element) =>
+    element.scrollIntoView({ block: 'start' }));
+  await page.waitForFunction(() =>
+    document.documentElement.dataset.activeSection === 'failure-register');
+
+  const state = await page.evaluate(() => {
+    const links = [...document.querySelectorAll(
+      '[data-section="failure-register"]',
+    )];
+    const visibleLink = links.find((link) => {
+      const style = getComputedStyle(link);
+      return style.display !== 'none' && style.visibility !== 'hidden' &&
+        link.getClientRects().length > 0;
+    });
+    const orangeProbe = document.createElement('span');
+    orangeProbe.style.color = 'var(--orange)';
+    document.body.append(orangeProbe);
+    const orange = getComputedStyle(orangeProbe).color;
+    orangeProbe.remove();
+    return {
+      currentValues: links.map((link) => link.getAttribute('aria-current')),
+      visibleBorder: getComputedStyle(visibleLink).borderBottomColor,
+      orange,
+    };
+  });
+
+  assert.deepEqual(state.currentValues, ['true', 'true']);
+  assert.equal(state.visibleBorder, state.orange,
+    'the visible current-section treatment must use the orange rule');
+  await page.close();
 });
 
 test('caps desktop section type when the content rail stops growing', async () => {

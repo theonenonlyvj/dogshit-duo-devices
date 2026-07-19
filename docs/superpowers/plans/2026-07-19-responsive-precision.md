@@ -43,11 +43,11 @@
 
 **Interfaces:**
 - Consumes: Existing `.field-index`, `.manifesto-lines`, `.engagement-rows`, `.operator-register`, `h1`, and `h2` components.
-- Produces: Named `manifesto` counters, zeroed definition margins, component-driven responsive tiers, capped desktop display type, and `.chapter-directory` semantic navigation.
+- Produces: Authored `.manifesto-number` text, zeroed definition margins, component-driven responsive tiers, capped desktop display type, and `.chapter-directory` semantic navigation.
 
 - [ ] **Step 1: Write failing source tests**
 
-Add source assertions that require a named manifesto counter, `dd` margin reset, a second navigation labeled `Field document directory`, and explicit reads of the new spec and plan in the anonymity and no-em-dash tests. Replace legacy source assertions for `840px`, `841px`, and the `361px` to `389px` cover patch with the approved `1023px`, `1024px`, and compact-phone contracts.
+Add source assertions that require exact authored manifesto numbers, `dd` margin reset, a second navigation labeled `Field document directory`, and explicit reads of the new spec and plan in the anonymity and no-em-dash tests. Replace legacy source assertions for `840px`, `841px`, and the `361px` to `389px` cover patch with the approved `1023px`, `1024px`, and compact-phone contracts.
 
 ```js
 const responsiveDesign = await readFile(new URL(
@@ -59,10 +59,12 @@ const responsivePlan = await readFile(new URL(
 ```
 
 ```js
-test('uses explicit counters and neutral definition margins', () => {
-  assert.match(css, /\.manifesto-lines\s*\{[^}]*counter-reset:\s*manifesto/s);
-  assert.match(css, /\.manifesto-lines li\s*\{[^}]*counter-increment:\s*manifesto/s);
-  assert.match(css, /content:\s*counter\(manifesto, decimal-leading-zero\)/);
+test('authors exact manifesto numbers and neutral definition margins', () => {
+  const manifesto = sectionSource('manifesto');
+  const numbers = [...manifesto.matchAll(
+    /<span class="manifesto-number">(\d{2})<\/span>/g,
+  )].map((match) => match[1]);
+  assert.deepEqual(numbers, ['01', '02', '03']);
   assert.match(css, /\.engagement-rows dd\s*\{[^}]*margin:\s*0/s);
 });
 
@@ -83,15 +85,15 @@ test('ships a non-fixed mobile chapter navigation', () => {
 
 Run: `npm test`
 
-Expected: FAIL on the named manifesto counter, full `dd` margin reset, and mobile chapter navigation assertions.
+Expected: FAIL on authored manifesto numbers, full `dd` margin reset, and mobile chapter navigation assertions.
 
 - [ ] **Step 3: Write failing browser measurements**
 
-Replace the viewport matrix with these exact entries and density ceilings: 320x568 at 11650px, 320x700 at 11650px, 359x640 at 11000px, 360x640 at 11000px, 360x800 at 10800px, 375x812 at 10700px, 390x844 at 10500px, 412x915 at 10350px, 430x932 at 10300px, 479x844 at 10100px, 480x900 at 10000px, 768x1024 at 9000px, 840x900 at 8400px, 841x900 at 8400px, 844x390 at 8400px, 1023x768 at 8200px, 1024x768 at 7800px, 1280x720 at 7600px, 1423x900 at 7600px, 1424x900 at 7600px, 1440x900 at 7600px, and 1920x1080 at 7800px. Collect computed manifesto labels, null-safe chapter-directory display, field-index geometry, content-rail geometry, exact layout-mode properties, and heading sizes. Add `.chapter-directory a` to the interactive-target collector and require both width and height to reach 44px.
+Replace the viewport matrix with these exact entries and density ceilings: 320x568 at 11650px, 320x700 at 11650px, 359x640 at 11000px, 360x640 at 11000px, 360x800 at 10800px, 375x812 at 10700px, 390x844 at 10500px, 412x915 at 10350px, 430x932 at 10300px, 479x844 at 10100px, 480x900 at 10000px, 768x1024 at 9000px, 840x900 at 8400px, 841x900 at 8400px, 844x390 at 8400px, 1023x768 at 8200px, 1024x768 at 7800px, 1280x720 at 7600px, 1423x900 at 7600px, 1424x900 at 7600px, 1440x900 at 7600px, and 1920x1080 at 7800px. Collect authored manifesto text, null-safe chapter-directory display, field-index geometry, content-rail geometry, exact layout-mode properties, and heading sizes. Add `.chapter-directory a` to the interactive-target collector and require both width and height to reach 44px.
 
 ```js
-manifestoNumbers: [...document.querySelectorAll('.manifesto-lines li')]
-  .map((element) => getComputedStyle(element, '::before').content.replaceAll('"', '')),
+manifestoNumbers: [...document.querySelectorAll('.manifesto-number')]
+  .map((element) => element.textContent.trim()),
 chapterDirectoryDisplay: document.querySelector('.chapter-directory')
   ? getComputedStyle(document.querySelector('.chapter-directory')).display
   : 'missing',
@@ -130,11 +132,11 @@ Add an interaction test that scrolls the directory track to its start, focuses t
 
 Run: `npm run test:browser`
 
-Expected: FAIL because manifesto values are `00`, the chapter directory is absent, the whole page flips at 841px, and the wide field index is viewport-anchored.
+Expected: FAIL because authored manifesto values are absent, the chapter directory is absent, the whole page flips at 841px, and the wide field index is viewport-anchored.
 
 - [ ] **Step 5: Implement the minimal semantic and CSS foundation**
 
-Add `.chapter-directory` after `</header>`, reuse the existing seven chapter targets, and label the track `FIELD INDEX / SWIPE`. Update `script.js` so both navigation treatments receive `aria-current`. Scroll only the directory track when its active or focused link leaves the horizontal viewport; never call `scrollIntoView` on the in-flow navigation. Use explicit named counters, reset `.engagement-rows dd` with `margin: 0`, show the fixed index only where it fits 8px outside the capped rail, and replace the 360px headline inversion with monotonic compact-phone sizing. Cap desktop section heading size when the 82rem rail is reached. Replace the global 840/841 media pair with separate component rule groups for tablet composition through 1023px and desktop composition from 1024px. Hide the chapter directory in print.
+Add `.chapter-directory` after `</header>`, reuse the existing seven chapter targets, and label the track `FIELD INDEX / SWIPE`. Update `script.js` so both navigation treatments receive `aria-current="true"` only while active. Scroll only the directory track when its active or focused link leaves the horizontal viewport; never call `scrollIntoView` on the in-flow navigation. Author visible manifesto number spans, reset `.engagement-rows dd` with `margin: 0`, show the fixed index only where it fits 8px outside the capped rail, and replace the 360px headline inversion with monotonic compact-phone sizing. Cap desktop section heading size when the 82rem rail is reached. Replace the global 840/841 media pair with separate component rule groups for tablet composition through 1023px and desktop composition from 1024px. Hide the chapter directory in print.
 
 ```html
 <nav class="chapter-directory" aria-label="Field document directory">
@@ -152,12 +154,6 @@ Add `.chapter-directory` after `</header>`, reuse the existing seven chapter tar
 ```
 
 ```css
-.manifesto-lines { counter-reset: manifesto; }
-.manifesto-lines li { counter-increment: manifesto; }
-.manifesto-lines li::before {
-  content: counter(manifesto, decimal-leading-zero);
-}
-
 .engagement-rows dd { margin: 0; }
 
 @media (min-width: 1424px) {
@@ -204,7 +200,8 @@ const setActiveSection = (id) => {
   root.dataset.activeSection = id;
   for (const link of sectionLinks) {
     const active = link.dataset.section === id;
-    link.toggleAttribute('aria-current', active);
+    if (active) link.setAttribute('aria-current', 'true');
+    else link.removeAttribute('aria-current');
     if (active) revealDirectoryLink(link);
   }
 };
@@ -223,6 +220,11 @@ Expected: all Task 1 contracts pass with no previous regression.
 - [ ] **Step 7: Run the Task 1 council gate**
 
 Capture 320x568, 320x700, 390x844, 768x1024, 840x900, 841x900, 1023x768, 1024x768, 1280x720, 1423x900, 1424x900, 1440x900, and 1920x1080 renders. Ask independent reviewers to inspect navigation, fold, typography, rail alignment, breakpoint continuity, and visible numbering. Resolve all Critical and Important findings, rerun both test commands, then commit.
+
+Task 1 council amendment: authored `.manifesto-number` spans replace generated
+counters so the exact `01`, `02`, and `03` output is visible in the DOM and can
+be verified directly in every browser. The stylesheet contains no unused
+manifesto counter rules.
 
 Before committing, run:
 

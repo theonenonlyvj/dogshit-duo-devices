@@ -1193,7 +1193,6 @@ main > section + section:not(.manifesto) {
   margin: 0;
   padding: 0;
   border-top: 1px solid var(--steel);
-  counter-reset: manifesto;
   list-style: none;
 }
 
@@ -1204,7 +1203,6 @@ main > section + section:not(.manifesto) {
   gap: 1rem;
   padding-block: clamp(1rem, 2vw, 1.65rem);
   border-bottom: 1px solid var(--steel);
-  counter-increment: manifesto;
   font-family: "DDD Display", "Arial Narrow", Arial, sans-serif;
   font-size: clamp(1.8rem, 3.5vw, 3.35rem);
   font-weight: 700;
@@ -1212,8 +1210,7 @@ main > section + section:not(.manifesto) {
   line-height: 1;
 }
 
-.manifesto-lines li::before {
-  content: counter(manifesto, decimal-leading-zero);
+.manifesto-number {
   color: var(--orange);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.72rem;
@@ -2180,20 +2177,22 @@ footer a {
     padding-block: 0.65rem;
   }
 
-  .failure-rows summary span,
+  .failure-rows summary > span:first-child,
+  .failure-rows summary > span:nth-child(2),
+  .failure-rows summary > .operator-translation,
   .failure-rows summary::after {
     grid-row: 1;
   }
 
-  .failure-rows summary span:first-child {
+  .failure-rows summary > span:first-child {
     grid-column: 1;
   }
 
-  .failure-rows summary span:nth-child(2) {
+  .failure-rows summary > span:nth-child(2) {
     grid-column: 2;
   }
 
-  .operator-translation {
+  .failure-rows summary > .operator-translation {
     grid-column: 3;
     margin-top: 0;
     padding-left: 0.9rem;
