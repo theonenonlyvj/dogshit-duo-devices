@@ -253,6 +253,72 @@ test('uses a balanced tablet pathway rail before the desktop composition', async
   }
 });
 
+test('keeps handoff alerts readable and collision-free across route modes', async () => {
+  for (const viewport of [
+    { width: 320, height: 700 },
+    { width: 359, height: 640 },
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 1023, height: 768 },
+    { width: 1024, height: 768 },
+  ]) {
+    const page = await browser.newPage({ viewport });
+    await page.goto(baseURL, { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+
+    const alerts = await page.locator('.route-alert').evaluateAll((elements) => {
+      const box = (element) => {
+        const rect = element.getBoundingClientRect();
+        return { top: rect.top, right: rect.right, bottom: rect.bottom,
+          left: rect.left, width: rect.width, height: rect.height };
+      };
+      const intersects = (first, second) =>
+        Math.min(first.right, second.right) - Math.max(first.left, second.left) > 1 &&
+        Math.min(first.bottom, second.bottom) - Math.max(first.top, second.top) > 1;
+      return elements
+        .filter((element) => {
+          const style = getComputedStyle(element);
+          return style.display !== 'none' && style.visibility !== 'hidden' &&
+            element.getClientRects().length > 0;
+        })
+        .map((element) => {
+          const alert = box(element);
+          const cardElement = element.closest('.pathway-zone-route > li');
+          const card = box(cardElement);
+          const siblingRects = [...cardElement.children]
+            .filter((sibling) => sibling !== element && sibling.getClientRects().length > 0)
+            .map(box);
+          return {
+            text: element.textContent.trim().replace(/\s+/g, ' '),
+            fontSize: Number.parseFloat(getComputedStyle(element).fontSize),
+            alert,
+            card,
+            textFits: element.scrollWidth <= element.clientWidth + 1 &&
+              element.scrollHeight <= element.clientHeight + 1,
+            collides: siblingRects.some((sibling) => intersects(alert, sibling)),
+          };
+        });
+    });
+
+    assert.equal(alerts.length, 2,
+      `${viewport.width}px must retain both visible handoff alerts`);
+    for (const alert of alerts) {
+      assert.ok(alert.fontSize >= 11.5,
+        `${viewport.width}px ${alert.text} must remain at least 11.5px: ${alert.fontSize}`);
+      assert.ok(alert.textFits,
+        `${viewport.width}px ${alert.text} must not overflow its alert box`);
+      assert.ok(alert.alert.left >= alert.card.left - 1 &&
+        alert.alert.right <= alert.card.right + 1 &&
+        alert.alert.top >= alert.card.top - 1 &&
+        alert.alert.bottom <= alert.card.bottom + 1,
+      `${viewport.width}px ${alert.text} must stay inside its route card`);
+      assert.equal(alert.collides, false,
+        `${viewport.width}px ${alert.text} must not collide with route content`);
+    }
+    await page.close();
+  }
+});
+
 for (const viewport of viewports) {
   test(`renders the ${viewport.name} contract`, async (t) => {
     const page = await browser.newPage({ viewport });

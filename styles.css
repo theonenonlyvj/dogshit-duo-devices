@@ -1599,7 +1599,7 @@ footer a {
 
   .route-alert {
     position: absolute;
-    top: 0.8rem;
+    top: 0.65rem;
     left: 4.25rem;
     margin: 0;
   }
@@ -2038,8 +2038,8 @@ footer a {
 
   .route-alert {
     margin-bottom: 0.4rem;
-    padding-block: 0.3rem;
-    font-size: 0.65rem;
+    padding-block: 0.2rem;
+    font-size: 0.72rem;
   }
 
   .lens-grid article {
