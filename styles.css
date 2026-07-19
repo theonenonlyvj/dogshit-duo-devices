@@ -2179,6 +2179,46 @@ footer a {
   }
 }
 
+@media (min-width: 600px) and (max-width: 1023px) {
+  .pathway-zone-title {
+    padding-block: 0.45rem;
+  }
+
+  .pathway-zone-route li {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    column-gap: clamp(1.25rem, 4vw, 2.75rem);
+    padding: 0.75rem 0 0.9rem 3.75rem;
+  }
+
+  .pathway-zone-route li > .route-label,
+  .pathway-zone-route li > h4,
+  .pathway-zone-route li > .route-alert {
+    grid-column: 1 / -1;
+  }
+
+  .pathway-zone-route li > p:not(.route-label, .route-alert) {
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+  }
+
+  .pathway-zone-route h4 {
+    margin-top: 0;
+    margin-bottom: 0.6rem;
+    font-size: clamp(1.5rem, 3.4vw, 1.9rem);
+  }
+
+  .pathway-zone-route .route-node {
+    top: 0.75rem;
+  }
+
+  .route-alert {
+    margin-bottom: 0.45rem;
+  }
+}
+
 @media (max-width: 359px) {
   h1 {
     margin-bottom: 0.25rem;

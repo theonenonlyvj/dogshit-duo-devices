@@ -103,9 +103,8 @@ test('aligns diagram artwork, captions, and local pathway lanes', async () => {
         .map((card) => {
           const cardRect = card.getBoundingClientRect();
           const node = card.querySelector('.route-node');
-          const nodeRect = node.getBoundingClientRect();
           const copy = [...card.querySelectorAll(':scope > .route-label, :scope > h4, ' +
-            ':scope > p:not(.route-alert)')]
+            ':scope > p')]
             .filter((element) => element.getClientRects().length > 0)
             .map((element) => element.getBoundingClientRect());
           const pseudo = getComputedStyle(card, '::after');
@@ -168,6 +167,87 @@ test('aligns diagram artwork, captions, and local pathway lanes', async () => {
         assert.equal(card.connectorContent, 'none',
           `${width}px final zone card must end its local connector`);
       }
+    }
+    await page.close();
+  }
+});
+
+test('uses a balanced tablet pathway rail before the desktop composition', async () => {
+  for (const width of [600, 768, 1023, 1024]) {
+    const page = await browser.newPage({ viewport: { width, height: 1024 } });
+    await page.goto(baseURL, { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+
+    const geometry = await page.evaluate(() => {
+      const box = (element) => {
+        const rect = element.getBoundingClientRect();
+        return { left: rect.left, right: rect.right, top: rect.top,
+          bottom: rect.bottom, width: rect.width, height: rect.height };
+      };
+      const group = document.querySelector('.pathway-groups');
+      return {
+        columnCount: getComputedStyle(group).gridTemplateColumns
+          .split(' ').filter(Boolean).length,
+        zones: [...document.querySelectorAll('.pathway-zone')].map(box),
+        cards: [...document.querySelectorAll('.pathway-zone-route > li')]
+          .map((card) => {
+            const liveCopy = [...card.querySelectorAll(
+              ':scope > .route-label, :scope > h4, :scope > p')]
+              .filter((element) => element.getClientRects().length > 0);
+            const bodyCopy = [...card.querySelectorAll(
+              ':scope > p:not(.route-label, .route-alert)')];
+            const scanCopy = [...card.children]
+              .filter((element) => element.matches(
+                '.route-label, h4, .route-alert'));
+            return {
+              card: box(card),
+              node: box(card.querySelector('.route-node')),
+              liveCopy: liveCopy.map(box),
+              bodyCopy: bodyCopy.map(box),
+              scanCopy: scanCopy.map(box),
+            };
+          }),
+      };
+    });
+
+    if (width <= 1023) {
+      assert.equal(geometry.columnCount, 1,
+        `${width}px tablet pathway zones must stay in semantic order`);
+      for (const [index, card] of geometry.cards.entries()) {
+        assert.equal(card.bodyCopy.length, 2,
+          `${width}px pathway card ${index + 1} must keep both decision fields`);
+        const [mustDecide, breaksWhen] = card.bodyCopy;
+        assert.ok(Math.abs(mustDecide.width - breaksWhen.width) <= 2,
+          `${width}px pathway card ${index + 1} needs balanced copy columns`);
+        assert.ok(Math.abs(mustDecide.top - breaksWhen.top) <= 2,
+          `${width}px pathway card ${index + 1} copy columns must start together`);
+        assert.ok(mustDecide.right + 12 <= breaksWhen.left,
+          `${width}px pathway card ${index + 1} copy columns must not overlap`);
+        assert.ok(card.liveCopy.every((copy) =>
+          copy.left >= card.card.left - 1 && copy.right <= card.card.right + 1 &&
+          copy.top >= card.card.top - 1 && copy.bottom <= card.card.bottom + 1),
+        `${width}px pathway card ${index + 1} copy must stay contained`);
+        assert.ok(card.scanCopy.every((copy, scanIndex, values) =>
+          scanIndex === 0 || copy.top >= values[scanIndex - 1].bottom - 1),
+        `${width}px pathway card ${index + 1} label, title, and alert must preserve scan order`);
+        assert.ok(card.scanCopy.every((copy, scanIndex, values) =>
+          scanIndex === 0 || copy.top - values[scanIndex - 1].bottom <= 20),
+        `${width}px pathway card ${index + 1} heading rail must not create dead space`);
+        const firstBodyTop = Math.min(...card.bodyCopy.map((copy) => copy.top));
+        assert.ok(card.scanCopy.every((copy) => copy.bottom <= firstBodyTop + 1),
+          `${width}px pathway card ${index + 1} decision fields must follow its heading rail`);
+        assert.ok(card.node.right <= Math.min(...card.liveCopy.map((copy) => copy.left)) - 12,
+          `${width}px pathway card ${index + 1} node gutter must stay clear`);
+      }
+    } else {
+      assert.equal(geometry.columnCount, 3,
+        '1024px must retain the three-column desktop pathway');
+      assert.ok(geometry.zones[0].left < geometry.zones[1].left &&
+        geometry.zones[1].left < geometry.zones[2].left,
+      '1024px desktop zones must progress across the rail');
+      assert.ok(geometry.zones.every((zone) =>
+        Math.abs(zone.top - geometry.zones[0].top) <= 1),
+      '1024px desktop zones must share a top edge');
     }
     await page.close();
   }
