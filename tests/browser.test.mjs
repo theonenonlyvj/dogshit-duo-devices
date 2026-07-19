@@ -330,9 +330,13 @@ for (const viewport of viewports) {
             textFits: element.scrollWidth <= element.clientWidth + 1 &&
               element.scrollHeight <= element.clientHeight + 1,
           })),
+        coverCaptionSizes: [...document.querySelectorAll(
+          '.cover-apparatus figcaption span')]
+          .map((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
         primaryAction: rect('.primary-action'),
         register: rect('.operator-register'),
         gutCheckAction: rect('.gut-check-action'),
+        copyGutCheck: rect('.copy-gut-check:not([hidden])'),
         manifestoNumbers: [...document.querySelectorAll('.manifesto-number')]
           .map((element) => element.textContent.trim()),
         chapterDirectoryDisplay: document.querySelector('.chapter-directory')
@@ -395,6 +399,40 @@ for (const viewport of viewports) {
           .map((element) => Number.parseInt(getComputedStyle(element).fontWeight, 10)),
         engagementDetailWeights: [...document.querySelectorAll('.engagement-detail dd')]
           .map((element) => Number.parseInt(getComputedStyle(element).fontWeight, 10)),
+        engagementRails: [...document.querySelectorAll('.engagement-rows dl')]
+          .map((element) => {
+            const value = element.getBoundingClientRect();
+            return { left: value.left, right: value.right, width: value.width };
+          }),
+        engagementPrimaryRects: [...document.querySelectorAll('.engagement-primary')]
+          .map((element) => {
+            const value = element.getBoundingClientRect();
+            return { left: value.left, right: value.right, width: value.width,
+              articleIndex: [...document.querySelectorAll('.engagement-rows article')]
+                .indexOf(element.closest('article')) };
+          }),
+        engagementDetailRects: [...document.querySelectorAll('.engagement-detail')]
+          .map((element) => {
+            const value = element.getBoundingClientRect();
+            return { left: value.left, right: value.right, width: value.width,
+              articleIndex: [...document.querySelectorAll('.engagement-rows article')]
+                .indexOf(element.closest('article')) };
+          }),
+        ledgerSecondaryColumns: [...document.querySelectorAll('.ledger-secondary dl')]
+          .map((element) => getComputedStyle(element).gridTemplateColumns
+            .split(' ').filter(Boolean).length),
+        denseBodySizes: Object.fromEntries([
+          '.engagement-rows dd',
+          '.ledger-row dd',
+          '.pathway-zone-route li > p:not(.route-label, .route-alert)',
+          '.operator-register dd',
+        ].map((selector) => [selector, [...document.querySelectorAll(selector)]
+          .map((element) => Number.parseFloat(getComputedStyle(element).fontSize))])),
+        chapterDirectoryTargets: [...document.querySelectorAll('.chapter-directory a')]
+          .map((element) => {
+            const value = element.getBoundingClientRect();
+            return { width: value.width, height: value.height };
+          }),
         engagementLabelSizes: [...document.querySelectorAll('.engagement-rows dt')]
           .map((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
         ledgerLabelSizes: [...document.querySelectorAll('.ledger-row dt')]
@@ -462,6 +500,11 @@ for (const viewport of viewports) {
     if (viewport.width <= 480) {
       assert.ok(metrics.directoryTrackScrollWidth > metrics.directoryTrackClientWidth,
         'the narrow directory must scroll inside its own track');
+      assert.equal(metrics.chapterDirectoryTargets.length, 7,
+        'the phone chapter directory must retain all seven destinations');
+      assert.ok(metrics.chapterDirectoryTargets.every((target) =>
+        target.width >= 43.5 && target.height >= 43.5),
+      'every phone chapter-directory destination must retain a 44px target');
     }
     assert.equal(metrics.visualSignatures.length, 8);
     assert.ok(metrics.visualSignatures.every((visual) =>
@@ -537,11 +580,46 @@ for (const viewport of viewports) {
         coverDisplay: 'block',
         pathwayColumnCount: 1,
         engagementArticleDisplay: 'block',
-        engagementColumnCount: 2,
+        engagementColumnCount: viewport.width <= 359 ? 1 : 2,
         methodDisplay: 'block',
         ledgerRowsDisplay: 'block',
         gutCheckDisplay: 'block',
       });
+    }
+
+    if (viewport.width <= 480) {
+      assert.ok(metrics.coverCaptionSizes.every((size) => size >= 11.5),
+        'cover apparatus captions must remain at least 11.5px through the 480px boundary');
+    }
+
+    if (viewport.width <= 479) {
+      for (const [selector, sizes] of Object.entries(metrics.denseBodySizes)) {
+        assert.ok(sizes.length > 0, `${selector} must resolve to live dense body copy`);
+        assert.ok(sizes.every((size) => size >= 14.5),
+          `${selector} must remain at least 14.5px on compact phones`);
+      }
+      assert.equal(metrics.engagementPrimaryRects.length, 6,
+        'the compact engagement rail must retain six primary decision fields');
+      assert.equal(metrics.engagementDetailRects.length, 6,
+        'the compact engagement rail must retain six secondary detail fields');
+      assert.ok(metrics.engagementPrimaryRects.every((field) => {
+        const rail = metrics.engagementRails[field.articleIndex];
+        return field.width >= rail.width * 0.9 &&
+          Math.abs(field.left - rail.left) <= 2 && Math.abs(field.right - rail.right) <= 2;
+      }), 'compact-phone primary engagement fields must span their card rail');
+      assert.ok(metrics.copyGutCheck && metrics.gutCheckAction,
+        'both final gut-check controls must be visible on compact phones');
+      assert.ok(Math.abs(metrics.copyGutCheck.left - metrics.gutCheckAction.left) <= 2 &&
+        Math.abs(metrics.copyGutCheck.right - metrics.gutCheckAction.right) <= 2,
+      'the copy control and final action must align to one compact-phone rail');
+    }
+
+    if (viewport.width <= 359) {
+      assert.ok(metrics.ledgerSecondaryColumns.every((count) => count === 1),
+        'secondary ledger details must stack below 360px');
+    } else if (viewport.width <= 480) {
+      assert.ok(metrics.ledgerSecondaryColumns.every((count) => count === 2),
+        'secondary ledger details must retain two columns from 360px');
     }
 
     if (['320x568', '320x700', '359x640', '360x640'].includes(viewport.name)) {

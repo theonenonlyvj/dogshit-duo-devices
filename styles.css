@@ -1832,7 +1832,7 @@ footer a {
     gap: 0;
     margin: 0;
     background: var(--paper);
-    font-size: 0.62rem;
+    font-size: 0.72rem;
   }
 
   .cover-apparatus figcaption span {
@@ -2107,6 +2107,41 @@ footer a {
 }
 
 @media (max-width: 479px) {
+  .cover-apparatus[data-mobile-dominant] {
+    min-height: 6.25rem;
+  }
+
+  .cover-apparatus figcaption {
+    letter-spacing: -0.01em;
+  }
+
+  .cover-apparatus figcaption span {
+    padding-inline: 0.05rem;
+  }
+
+  .engagement-rows dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .engagement-primary {
+    grid-column: 1 / -1;
+  }
+
+  .engagement-rows dd,
+  .ledger-row dd,
+  .pathway-zone-route li > p:not(.route-label, .route-alert) {
+    font-size: 0.91rem;
+  }
+
+  .pathway-zone-route li > p:not(.route-label, .route-alert) {
+    line-height: 1.24;
+  }
+
+  .copy-gut-check,
+  .gut-check-action {
+    width: 100%;
+  }
+
   .fault-family-visual img {
     height: 7rem;
   }
@@ -2220,6 +2255,11 @@ footer a {
 }
 
 @media (max-width: 359px) {
+  .engagement-rows dl,
+  .ledger-secondary dl {
+    grid-template-columns: 1fr;
+  }
+
   h1 {
     margin-bottom: 0.25rem;
     font-size: clamp(2.75rem, 13vw, 3rem);
